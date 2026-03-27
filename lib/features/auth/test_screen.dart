@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class LoginForm extends StatefulWidget{
-  const LoginForm({super.key});
+class TestScreen extends StatefulWidget{
+  const TestScreen({super.key});
 
   @override
-  State<LoginForm> createState() => _LoginState();
+  State<TestScreen> createState() => _LoginState();
 }
 
-class _LoginState extends State<LoginForm>{
+class _LoginState extends State<TestScreen>{
   @override
   Widget build(BuildContext context){
     return Center(
