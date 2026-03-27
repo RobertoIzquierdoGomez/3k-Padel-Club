@@ -1,4 +1,4 @@
-import 'package:app_3k_padel/features/auth/login_screen.dart';
+import 'package:app_3k_padel/features/auth/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
