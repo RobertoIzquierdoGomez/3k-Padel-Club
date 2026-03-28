@@ -1,6 +1,9 @@
+import 'package:app_3k_padel/model/user_model.dart';
+import 'package:app_3k_padel/services/user_service.dart';
 import 'package:app_3k_padel/widgets/custom_background.dart';
 import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class TestScreen extends StatefulWidget {
@@ -11,7 +14,13 @@ class TestScreen extends StatefulWidget {
 }
 
 class _LoginState extends State<TestScreen> {
-  final user = supabase.auth.currentUser;
+  late Future<UserModel?> futureUsuario;
+
+  @override
+  void initState(){
+    super.initState();
+    futureUsuario = UserService().getCurrentUser();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +35,32 @@ class _LoginState extends State<TestScreen> {
             child: Center(
               child: Column(
                 children: [
-                  Text(user?.email ?? "Invitado"),
+                  FutureBuilder<UserModel?>(
+                    future: futureUsuario,
+                    builder: (context, snapshot){
+                      //Mientras está cargando
+                      if(snapshot.connectionState == ConnectionState.waiting){
+                        return const CircularProgressIndicator();
+                      }
+                      //Si hay error
+                      if(snapshot.hasError){
+                        return Text(snapshot.error.toString());
+                      }
+                      //Cuando ya terminó
+                      final usuario = snapshot.data;
+                      //Si no hay usuario
+                      if(usuario == null){
+                        return const Text("Invitado");
+                      }
+                      //Usuario OK
+                      return Text("Bienvenido ${usuario.correo}");
+                    }
+                  ),
+
                   CustomButton(
                     text: "Logout",
                     isLoading: false,
+                    primary: true,
                     onPressFunction: () async => await supabase.auth.signOut(),
                   ),
                 ],

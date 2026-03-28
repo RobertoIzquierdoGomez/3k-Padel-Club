@@ -1,10 +1,8 @@
-import 'package:app_3k_padel/main.dart';
+
 import 'package:app_3k_padel/services/auth_service.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:app_3k_padel/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:app_3k_padel/features/auth/test_screen.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -95,6 +93,7 @@ class _LoginState extends State<LoginForm> {
               CustomButton(
                 text: "Iniciar sesión",
                 isLoading: isLoading,
+                primary: true,
                 onPressFunction: _login,
               ),
             ],
@@ -117,13 +116,7 @@ class _LoginState extends State<LoginForm> {
       final error = await AuthService().login(email, password);
 
       try{
-        if (error == null) {
-          if (!mounted) return;
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => TestScreen()),
-          );
-        } else {
+        if (error != null) {
           setState(() {
             errorMessage = error;
           });

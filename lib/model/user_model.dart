@@ -10,7 +10,7 @@ class UserModel {
 
   UserModel({required this.idUsuario, required this.nombre, required this.apellidos, required this.correo,required this.nivel, required this.tipoMiembro, required this.rol, required this.cambiarPassword});
 
-  factory UserModel.fromMap(Map<String, dynamic> json) {
+  factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       idUsuario: json['id_usuario'],
       nombre: json['nombre'],

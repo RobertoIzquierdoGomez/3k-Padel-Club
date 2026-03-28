@@ -4,12 +4,14 @@ class CustomButton extends StatelessWidget {
   final void Function()? onPressFunction;
   final String text;
   final bool isLoading;
+  final bool primary;
 
   const CustomButton({
     super.key,
     this.onPressFunction,
     required this.text,
     required this.isLoading,
+    required this.primary
   });
 
   @override
@@ -17,7 +19,9 @@ class CustomButton extends StatelessWidget {
     return ElevatedButton(
       style: ButtonStyle(
         backgroundColor: WidgetStatePropertyAll(
-          Color.fromARGB(255, 217, 221, 63),
+          primary ?
+          Color.fromARGB(255, 217, 221, 63) :
+          Color.fromARGB(255, 218, 84, 93),
         ),
       ),
       onPressed: isLoading ? null : onPressFunction,
