@@ -1,3 +1,4 @@
+
 class UserModel {
   final String idUsuario;
   final String nombre;
@@ -16,7 +17,7 @@ class UserModel {
       nombre: json['nombre'],
       apellidos: json['apellidos'],
       correo: json['correo'],
-      nivel: json['nivel'],
+      nivel: (json['nivel'] as num?)?.toDouble() ?? 0.0,
       tipoMiembro: json['tipo_miembro'],
       rol: json['rol'],
       cambiarPassword: json['cambiar_password'],

@@ -1,7 +1,8 @@
+import 'package:app_3k_padel/features/perfil/screens/perfil_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:app_3k_padel/features/auth/screens/login_screen.dart';
-import 'package:app_3k_padel/features/auth/test_screen.dart';
+
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -31,7 +32,7 @@ class AuthGate extends StatelessWidget {
         }
 
         // Si hay sesión → Home
-        return const TestScreen();
+        return const PerfilScreen();
       },
     );
   }

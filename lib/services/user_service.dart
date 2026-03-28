@@ -16,7 +16,6 @@ class UserService {
     .select()
     .eq('id_usuario', userAuthenticated.id);
 
-    
     if(data.isEmpty){
       return null;
     } else {
