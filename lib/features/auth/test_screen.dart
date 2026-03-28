@@ -1,26 +1,31 @@
+import 'package:app_3k_padel/widgets/custom_background.dart';
+import 'package:app_3k_padel/main.dart';
 import 'package:flutter/material.dart';
 
-class TestScreen extends StatefulWidget{
+class TestScreen extends StatefulWidget {
   const TestScreen({super.key});
 
   @override
   State<TestScreen> createState() => _LoginState();
 }
 
-class _LoginState extends State<TestScreen>{
+class _LoginState extends State<TestScreen> {
+  final user = supabase.auth.currentUser;
+  
   @override
-  Widget build(BuildContext context){
-    return Center(
-            child: Container(
-              constraints: BoxConstraints(maxWidth: 500, maxHeight: 300),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.green),
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(10))
-              ),
-              margin: EdgeInsets.all(40),
-              child: Center(child: Text("Prueba")),
-            ),
-          );
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Fondo(
+        imagePath: 'assets/backgrounds/grupo_personas_padel.png',
+        child: Center(
+          child: Container(
+            decoration: BoxDecoration(color: Colors.white),
+            width: 200,
+            height: 200,
+            child: Center(child: Text(user?.email ?? "Invitado")),
+          ),
+        ),
+      ),
+    );
   }
 }

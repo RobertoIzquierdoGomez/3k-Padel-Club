@@ -1,4 +1,4 @@
-import 'package:app_3k_padel/features/auth/screens/login_screen.dart';
+import 'package:app_3k_padel/features/auth/widget/auth_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:app_3k_padel/core/supabase_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '3K Padel',
-      home: const LoginScreen(),
+      home: const AuthGate(),
       debugShowCheckedModeBanner: false,
     );
   }

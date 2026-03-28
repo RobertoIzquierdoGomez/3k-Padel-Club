@@ -1,4 +1,5 @@
 import 'package:app_3k_padel/main.dart';
+import 'package:app_3k_padel/services/auth_service.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:app_3k_padel/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class _LoginState extends State<LoginForm> {
   final passwordCtrl =
       TextEditingController(); //Control para el campo de la contraseña
   String? errorMessage; //Mensaje de error para el intento del login.
+  bool isLoading = false; //Control del botón
 
   //libera memoria de los controladores
   @override
@@ -33,7 +35,7 @@ class _LoginState extends State<LoginForm> {
     if (value == null || value.isEmpty) {
       return 'Introduce un email';
     }
-    //TODO detectar "." después del @
+
     if (!value.contains('@')) {
       return 'Introduce un email válido';
     }
@@ -85,39 +87,54 @@ class _LoginState extends State<LoginForm> {
                 controller: passwordCtrl,
               ),
               if (errorMessage != null && errorMessage!.isNotEmpty)
-                Text(errorMessage!, style: TextStyle(color: Colors.red)),
+                Text(
+                  errorMessage!,
+                  style: TextStyle(color: Colors.red, fontSize: 13),
+                  textAlign: TextAlign.center,
+                ),
               CustomButton(
                 text: "Iniciar sesión",
-                onPressFunction: () async {
-                  if (_loginForm.currentState?.validate() ?? false) {
-                    final String email = emailCtrl.text;
-                    final String password = passwordCtrl.text;
-                    try {
-                      final AuthResponse res = await supabase.auth
-                          .signInWithPassword(email: email, password: password);
-                      final Session? session = res.session;
-                      final User? user = res.user;
-                      setState(() {
-                        errorMessage = null;
-                      });
-                      if (context.mounted) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => TestScreen()),
-                        );
-                      }
-                    } catch (e) {
-                      setState(() {
-                        errorMessage = "Email o contraseña incorrecto";
-                      });
-                    }
-                  }
-                },
+                isLoading: isLoading,
+                onPressFunction: _login,
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  //Función para hacer login
+  Future<void> _login() async {
+    if (_loginForm.currentState?.validate() ?? false) {
+      setState(() {
+        errorMessage = null;
+        isLoading = true;
+      });
+      final String email = emailCtrl.text;
+      final String password = passwordCtrl.text;
+
+      final error = await AuthService().login(email, password);
+
+      try{
+        if (error == null) {
+          if (!mounted) return;
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => TestScreen()),
+          );
+        } else {
+          setState(() {
+            errorMessage = error;
+          });
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
+      }
+    }
   }
 }
