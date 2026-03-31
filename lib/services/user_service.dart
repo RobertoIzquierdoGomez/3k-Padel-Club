@@ -23,5 +23,27 @@ class UserService {
     }
   }
 
+  //Obtener todos los usuarios
+  Future <List<UserModel?>?> getAllUsers() async {
+
+    final data = await _db
+    .from('usuarios')
+    .select();
+
+    if(data.isEmpty){
+      return null;
+    } else {
+      print(data);
+      return data.map(
+        (e) => UserModel.fromJson(e)
+      ).toList();
+    }
+  }
+
+  //Actualizar usuario
+  Future <void> updateUser(String id, String name, String apellidos, double nivel) async {
+
+  }
+
 
 }

@@ -8,8 +8,9 @@ class UserModel {
   final bool tipoMiembro;
   final String rol;
   final bool cambiarPassword;
+  final bool activo;
 
-  UserModel({required this.idUsuario, required this.nombre, required this.apellidos, required this.correo,required this.nivel, required this.tipoMiembro, required this.rol, required this.cambiarPassword});
+  UserModel({required this.idUsuario, required this.nombre, required this.apellidos, required this.correo,required this.nivel, required this.tipoMiembro, required this.rol, required this.cambiarPassword, required this.activo});
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -21,6 +22,7 @@ class UserModel {
       tipoMiembro: json['tipo_miembro'],
       rol: json['rol'],
       cambiarPassword: json['cambiar_password'],
+      activo: json['activo']
     ); 
   }
 
@@ -34,6 +36,7 @@ class UserModel {
       'tipo_miembro': tipoMiembro,
       'rol': rol,
       'cambiar_password': cambiarPassword,
+      'activo': activo
     };
   }
 }

@@ -3,7 +3,6 @@ import 'package:app_3k_padel/services/user_service.dart';
 import 'package:app_3k_padel/widgets/custom_background.dart';
 import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class TestScreen extends StatefulWidget {
