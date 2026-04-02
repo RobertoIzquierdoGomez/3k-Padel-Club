@@ -2,14 +2,10 @@ import 'package:app_3k_padel/widgets/custom_background.dart';
 import 'package:app_3k_padel/features/auth/widget/login_form.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
-  @override
-  State<LoginScreen> createState() => _LoginState();
-}
 
-class _LoginState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

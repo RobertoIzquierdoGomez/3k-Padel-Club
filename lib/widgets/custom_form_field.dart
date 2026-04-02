@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class CustomFormField extends StatelessWidget {
   final String labelText;
   final String? hintText;
-  final bool? obscureText;
+  final bool? obscureText; //Oculta el texto que escribe el usuario (contraseñas ***)
   final TextEditingController? controller;
   final String? Function(String?)? validator;
 
