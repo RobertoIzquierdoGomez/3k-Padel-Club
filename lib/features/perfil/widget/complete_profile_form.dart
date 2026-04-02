@@ -44,7 +44,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        constraints: BoxConstraints(maxWidth: 500, maxHeight: 500),
+        constraints: BoxConstraints(maxWidth: 500),
         decoration: BoxDecoration(
           border: Border.all(
             color: Color.fromARGB(255, 217, 221, 63),
@@ -58,6 +58,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         child: Form(
           key: _completeProfileForm,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             spacing: 30.0,
             children: [
