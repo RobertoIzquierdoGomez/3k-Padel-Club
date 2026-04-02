@@ -3,6 +3,7 @@ import 'package:app_3k_padel/services/auth_service.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:app_3k_padel/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -168,29 +169,34 @@ class _LoginState extends State<LoginForm> {
 
   //Función para hacer login
   Future<void> _login() async {
-    if (_loginForm.currentState?.validate() ?? false) {
+  if (_loginForm.currentState?.validate() ?? false) {
+    setState(() {
+      errorMessage = null;
+      isLoading = true;
+    });
+
+    final String email = emailCtrl.text;
+    final String password = passwordCtrl.text;
+
+    try {
+      await AuthService().login(email, password);
+    } on AuthException catch (e) {
       setState(() {
-        errorMessage = null;
-        isLoading = true;
+        errorMessage = e.message;
       });
-      final String email = emailCtrl.text;
-      final String password = passwordCtrl.text;
 
-      final error = await AuthService().login(email, password);
+    } catch (e) {
+      setState(() {
+        errorMessage = "Error inesperado";
+      });
 
-      try {
-        if (error != null) {
-          setState(() {
-            errorMessage = error;
-          });
-        }
-      } finally {
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-          });
-        }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
       }
     }
   }
+}
 }

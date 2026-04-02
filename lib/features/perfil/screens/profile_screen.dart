@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/features/auth/screens/reset_password_Screen.dart';
 import 'package:app_3k_padel/features/perfil/widget/perfil_label_widget.dart';
 import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/services/user_service.dart';
@@ -76,7 +77,19 @@ class PerfilScreen extends StatelessWidget {
                   },
                 ),
               ),
-              CustomButton(text: "Logout", isLoading: false, primary: false, onPressFunction: () async => await supabase.auth.signOut()),
+              CustomButton(
+                text: "Cambiar Contraseña",
+                isLoading: false,
+                primary: false,
+                onPressFunction: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ResetPasswordScreen(),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

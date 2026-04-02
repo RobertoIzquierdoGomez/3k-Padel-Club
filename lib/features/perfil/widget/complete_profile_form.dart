@@ -91,7 +91,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
                 text: "Registrar",
                 isLoading: isLoading,
                 primary: true,
-                onPressFunction: _UpdateUser,
+                onPressFunction: _updateUser,
               ),
             ],
           ),
@@ -101,7 +101,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
   }
 
   //Función para actualizar el usuario
-  Future<void> _UpdateUser() async {
+  Future<void> _updateUser() async {
     if (_completeProfileForm.currentState?.validate() ?? false) {
       setState(() {
         errorMessage = null;
