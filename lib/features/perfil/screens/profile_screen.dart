@@ -1,7 +1,7 @@
 import 'package:app_3k_padel/features/auth/screens/reset_password_Screen.dart';
 import 'package:app_3k_padel/features/perfil/widget/perfil_label_widget.dart';
-import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/services/user_service.dart';
+import 'package:app_3k_padel/widgets/custom_appbar.dart';
 import 'package:app_3k_padel/widgets/custom_background.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +12,8 @@ class PerfilScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: CustomAppbar(),
       body: Fondo(
         imagePath: 'assets/backgrounds/fondo_perfil.png',
         child: Center(

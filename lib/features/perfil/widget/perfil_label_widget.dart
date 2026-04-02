@@ -23,7 +23,7 @@ class PerfilLabelWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               color: Color.fromARGB(100, 217, 217, 217),
             ),
-            child: Text(field),
+            child: Text(field, overflow: TextOverflow.ellipsis,),
           ),
         ),
       ],
