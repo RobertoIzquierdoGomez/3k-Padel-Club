@@ -36,7 +36,8 @@ class _LoginState extends State<LoginForm> {
       return 'Introduce un email';
     }
 
-    if (!value.contains('@')) {
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+    if (!emailRegex.hasMatch(value)) {
       return 'Introduce un email válido';
     }
     return null;
@@ -122,7 +123,17 @@ class _LoginState extends State<LoginForm> {
                     )
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 20,
                       children: [
+                        SizedBox(
+                          width: 150,
+                          child: CustomButton(
+                            text: "Iniciar sesión",
+                            isLoading: isLoading,
+                            primary: true,
+                            onPressFunction: _login,
+                          ),
+                        ),
                         SizedBox(
                           width: 150,
                           child: CustomButton(
@@ -136,17 +147,14 @@ class _LoginState extends State<LoginForm> {
                                   builder: (context) => RegisterScreen(),
                                 ),
                               );
+                              _loginForm.currentState?.reset();
+                              emailCtrl.clear();
+                              passwordCtrl.clear();
+
+                              setState(() {
+                                errorMessage = null;
+                              });
                             },
-                          ),
-                        ),
-                        SizedBox(width: 20),
-                        SizedBox(
-                          width: 150,
-                          child: CustomButton(
-                            text: "Iniciar sesión",
-                            isLoading: isLoading,
-                            primary: true,
-                            onPressFunction: _login,
                           ),
                         ),
                       ],
