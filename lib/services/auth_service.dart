@@ -53,4 +53,17 @@ class AuthService {
       throw Exception("Error inesperado");
     }
   }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+  try {
+    await supabase.auth.resetPasswordForEmail(
+      email,
+      redirectTo: 'http://localhost:3000/reset-password',
+    );
+  } on AuthException {
+    rethrow;
+  } catch (e) {
+    throw Exception("Error inesperado");
+  }
+}
 }

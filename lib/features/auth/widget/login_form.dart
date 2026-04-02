@@ -13,17 +13,13 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginState extends State<LoginForm> {
-  final GlobalKey<FormState> _loginForm =
-      GlobalKey<FormState>(); //Llave para el formulario del login
-  final emailCtrl = TextEditingController(); //Control para el campo del email
-  final passwordCtrl =
-      TextEditingController(); //Control para el campo de la contraseña
-  String? errorMessage; //Mensaje de error para el intento del login.
-  bool isLoading = false; //Control del botón
+  final GlobalKey<FormState> _loginForm = GlobalKey<FormState>();
+  final emailCtrl = TextEditingController();
+  final passwordCtrl = TextEditingController();
 
+  String? errorMessage;
+  bool isLoadingLogin = false;
 
-
-  //libera memoria de los controladores
   @override
   void dispose() {
     emailCtrl.dispose();
@@ -31,7 +27,6 @@ class _LoginState extends State<LoginForm> {
     super.dispose();
   }
 
-  //Función que va validar que en el email se rellene uno válido.
   String? Function(String?) validatorEmail = (String? value) {
     if (value == null || value.isEmpty) {
       return 'Introduce un email';
@@ -44,7 +39,6 @@ class _LoginState extends State<LoginForm> {
     return null;
   };
 
-  //Validador para asegurar que se introduce alguna contraseña.
   String? Function(String?) validatorPass = (String? value) {
     if (value == null || value.isEmpty) {
       return 'Introduce una contraseña';
@@ -91,25 +85,133 @@ class _LoginState extends State<LoginForm> {
                 obscureText: true,
                 controller: passwordCtrl,
               ),
+
+              //RECUPERAR CONTRASEÑA
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (dialogContext) {
+                        final GlobalKey<FormState> formKey =
+                            GlobalKey<FormState>();
+                        final emailRecupCtrl = TextEditingController()
+                          ..text = emailCtrl.text;
+
+                        bool isLoadingRecover = false;
+
+                        return StatefulBuilder(
+                          builder: (context, setStateDialog) {
+                            return AlertDialog(
+                              title: Text("Recuperar contraseña"),
+                              content: Form(
+                                key: formKey,
+                                child: CustomFormField(
+                                  labelText: "Email",
+                                  validator: validatorEmail,
+                                  controller: emailRecupCtrl,
+                                ),
+                              ),
+                              actionsAlignment: MainAxisAlignment.center,
+                              actions: [
+                                CustomButton(
+                                  text: "Cancelar",
+                                  isLoading: false,
+                                  primary: false,
+                                  onPressFunction: () {
+                                    Navigator.pop(dialogContext);
+                                  },
+                                ),
+                                CustomButton(
+                                  text: "Enviar",
+                                  isLoading: isLoadingRecover,
+                                  primary: true,
+                                  onPressFunction: () async {
+                                    if (formKey.currentState?.validate() ??
+                                        false) {
+                                      setStateDialog(() {
+                                        isLoadingRecover = true;
+                                      });
+
+                                      final email = emailRecupCtrl.text;
+
+                                      try {
+                                        await AuthService()
+                                            .sendPasswordResetEmail(email);
+
+                                        Navigator.pop(dialogContext);
+
+                                        ScaffoldMessenger.of(
+                                          this.context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Si el email es válido recibirás un correo.',
+                                            ),
+                                          ),
+                                        );
+                                      } on AuthException catch (e) {
+                                        ScaffoldMessenger.of(
+                                          this.context,
+                                        ).showSnackBar(
+                                          SnackBar(content: Text(e.message)),
+                                        );
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(
+                                          this.context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text("Error inesperado"),
+                                          ),
+                                        );
+                                      } finally {
+                                        setStateDialog(() {
+                                          isLoadingRecover = false;
+                                        });
+                                      }
+                                    }
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                  child: Text(
+                    "¿Olvidaste tu contraseña?",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12.0,
+                      color: Color.fromARGB(255, 53, 95, 169),
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ),
+
               if (errorMessage != null && errorMessage!.isNotEmpty)
                 Text(
                   errorMessage!,
                   style: TextStyle(color: Colors.red, fontSize: 13),
                   textAlign: TextAlign.center,
                 ),
+
               isMobile
                   ? Column(
                       children: [
                         CustomButton(
                           text: "Iniciar sesión",
-                          isLoading: isLoading,
+                          isLoading: isLoadingLogin,
                           primary: true,
                           onPressFunction: _login,
                         ),
                         SizedBox(height: 15),
                         CustomButton(
                           text: "Registrarme",
-                          isLoading: isLoading,
+                          isLoading: isLoadingLogin,
                           primary: false,
                           onPressFunction: () {
                             Navigator.push(
@@ -130,7 +232,7 @@ class _LoginState extends State<LoginForm> {
                           width: 150,
                           child: CustomButton(
                             text: "Iniciar sesión",
-                            isLoading: isLoading,
+                            isLoading: isLoadingLogin,
                             primary: true,
                             onPressFunction: _login,
                           ),
@@ -139,7 +241,7 @@ class _LoginState extends State<LoginForm> {
                           width: 150,
                           child: CustomButton(
                             text: "Registrarme",
-                            isLoading: isLoading,
+                            isLoading: isLoadingLogin,
                             primary: false,
                             onPressFunction: () {
                               Navigator.push(
@@ -167,36 +269,33 @@ class _LoginState extends State<LoginForm> {
     );
   }
 
-  //Función para hacer login
   Future<void> _login() async {
-  if (_loginForm.currentState?.validate() ?? false) {
-    setState(() {
-      errorMessage = null;
-      isLoading = true;
-    });
-
-    final String email = emailCtrl.text;
-    final String password = passwordCtrl.text;
-
-    try {
-      await AuthService().login(email, password);
-    } on AuthException catch (e) {
+    if (_loginForm.currentState?.validate() ?? false) {
       setState(() {
-        errorMessage = e.message;
+        errorMessage = null;
+        isLoadingLogin = true;
       });
 
-    } catch (e) {
-      setState(() {
-        errorMessage = "Error inesperado";
-      });
+      final email = emailCtrl.text;
+      final password = passwordCtrl.text;
 
-    } finally {
-      if (mounted) {
+      try {
+        await AuthService().login(email, password);
+      } on AuthException catch (e) {
         setState(() {
-          isLoading = false;
+          errorMessage = e.message;
         });
+      } catch (e) {
+        setState(() {
+          errorMessage = "Error inesperado";
+        });
+      } finally {
+        if (mounted) {
+          setState(() {
+            isLoadingLogin = false;
+          });
+        }
       }
     }
   }
-}
 }
