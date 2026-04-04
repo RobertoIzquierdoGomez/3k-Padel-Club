@@ -85,7 +85,10 @@ class _RegisterFormState extends State<RegisterForm> {
                     ),
                     Text(
                       "Mín. 8 caracteres, mayúscula, minúscula y número",
-                      style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12.0),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12.0,
+                      ),
                     ),
                     if (errorMessage != null && errorMessage!.isNotEmpty)
                       Text(
@@ -125,17 +128,14 @@ class _RegisterFormState extends State<RegisterForm> {
             registerSuccess = true;
           });
         }
-
-      } on AuthException {
+      } on AuthException catch (e) {
         setState(() {
-          errorMessage = "Error al registrar usuario";
+          errorMessage = e.message;
         });
-
       } catch (e) {
         setState(() {
           errorMessage = "Error inesperado";
         });
-
       } finally {
         if (mounted) {
           setState(() {

@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/features/auth/screens/reset_password_screen.dart';
 import 'package:app_3k_padel/features/auth/widget/auth_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:app_3k_padel/core/supabase_config.dart';
@@ -10,17 +11,33 @@ void main() async {
 
   runApp(const MyApp());
 }
+
 // Get a reference your Supabase client
 final supabase = Supabase.instance.client;
+bool isRecoveringPassword = false;
 
 class MyApp extends StatelessWidget {
+  
+  
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+
+    final uri = Uri.base;
+
+    Widget home;
+
+    // 🔥 DETECTAR RESET PASSWORD
+    if (uri.path == '/reset-password') {
+      home = const ResetPasswordScreen();
+    } else {
+      home = const AuthGate();
+    }
+
     return MaterialApp(
       title: '3K Padel',
-      home: const AuthGate(),
+      home: home,
       debugShowCheckedModeBanner: false,
     );
   }

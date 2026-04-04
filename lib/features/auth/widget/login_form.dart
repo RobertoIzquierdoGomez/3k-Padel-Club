@@ -1,4 +1,6 @@
 import 'package:app_3k_padel/features/auth/screens/register_screen.dart';
+import 'package:app_3k_padel/features/auth/widget/recover_password_dialog.dart';
+import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/services/auth_service.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:app_3k_padel/widgets/custom_form_field.dart';
@@ -85,99 +87,17 @@ class _LoginState extends State<LoginForm> {
                 obscureText: true,
                 controller: passwordCtrl,
               ),
-
               //RECUPERAR CONTRASEÑA
               MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: GestureDetector(
                   onTap: () {
+                    isRecoveringPassword = true;
+
                     showDialog(
                       context: context,
-                      builder: (dialogContext) {
-                        final GlobalKey<FormState> formKey =
-                            GlobalKey<FormState>();
-                        final emailRecupCtrl = TextEditingController()
-                          ..text = emailCtrl.text;
-
-                        bool isLoadingRecover = false;
-
-                        return StatefulBuilder(
-                          builder: (context, setStateDialog) {
-                            return AlertDialog(
-                              title: Text("Recuperar contraseña"),
-                              content: Form(
-                                key: formKey,
-                                child: CustomFormField(
-                                  labelText: "Email",
-                                  validator: validatorEmail,
-                                  controller: emailRecupCtrl,
-                                ),
-                              ),
-                              actionsAlignment: MainAxisAlignment.center,
-                              actions: [
-                                CustomButton(
-                                  text: "Cancelar",
-                                  isLoading: false,
-                                  primary: false,
-                                  onPressFunction: () {
-                                    Navigator.pop(dialogContext);
-                                  },
-                                ),
-                                CustomButton(
-                                  text: "Enviar",
-                                  isLoading: isLoadingRecover,
-                                  primary: true,
-                                  onPressFunction: () async {
-                                    if (formKey.currentState?.validate() ??
-                                        false) {
-                                      setStateDialog(() {
-                                        isLoadingRecover = true;
-                                      });
-
-                                      final email = emailRecupCtrl.text;
-
-                                      try {
-                                        await AuthService()
-                                            .sendPasswordResetEmail(email);
-
-                                        Navigator.pop(dialogContext);
-
-                                        ScaffoldMessenger.of(
-                                          this.context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              'Si el email es válido recibirás un correo.',
-                                            ),
-                                          ),
-                                        );
-                                      } on AuthException catch (e) {
-                                        ScaffoldMessenger.of(
-                                          this.context,
-                                        ).showSnackBar(
-                                          SnackBar(content: Text(e.message)),
-                                        );
-                                      } catch (e) {
-                                        ScaffoldMessenger.of(
-                                          this.context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text("Error inesperado"),
-                                          ),
-                                        );
-                                      } finally {
-                                        setStateDialog(() {
-                                          isLoadingRecover = false;
-                                        });
-                                      }
-                                    }
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
+                      builder: (_) =>
+                          RecoverPasswordDialog(initialEmail: emailCtrl.text),
                     );
                   },
                   child: Text(

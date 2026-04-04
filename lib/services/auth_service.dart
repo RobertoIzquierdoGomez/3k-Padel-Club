@@ -4,13 +4,9 @@ import 'package:app_3k_padel/services/user_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
-
   Future<void> login(String email, String password) async {
     try {
-      await supabase.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
+      await supabase.auth.signInWithPassword(email: email, password: password);
 
       UserModel? user = await UserService().getCurrentUser();
 
@@ -18,7 +14,6 @@ class AuthService {
         await supabase.auth.signOut();
         throw AuthException("Usuario desactivado");
       }
-
     } on AuthException {
       rethrow;
     } catch (e) {
@@ -34,7 +29,6 @@ class AuthService {
       );
 
       return res.user;
-
     } on AuthException {
       rethrow;
     } catch (e) {
@@ -44,9 +38,7 @@ class AuthService {
 
   Future<void> updatePassword(String password) async {
     try {
-      await supabase.auth.updateUser(
-        UserAttributes(password: password),
-      );
+      await supabase.auth.updateUser(UserAttributes(password: password));
     } on AuthException {
       rethrow;
     } catch (e) {
@@ -55,15 +47,29 @@ class AuthService {
   }
 
   Future<void> sendPasswordResetEmail(String email) async {
-  try {
-    await supabase.auth.resetPasswordForEmail(
-      email,
-      redirectTo: 'http://localhost:3000/reset-password',
-    );
-  } on AuthException {
-    rethrow;
-  } catch (e) {
-    throw Exception("Error inesperado");
+    try {
+      await supabase.auth.resetPasswordForEmail(
+        email,
+        redirectTo: 'http://localhost:3000/reset-password',
+      );
+    } on AuthException {
+      rethrow;
+    } catch (e) {
+      throw Exception("Error inesperado");
+    }
   }
-}
+
+  Future<void> sendOtpEmail(String email) async {
+    try {
+      await supabase.auth.signInWithOtp(
+        email: email,
+        shouldCreateUser: false,
+        emailRedirectTo: null,
+      );
+    } on AuthException {
+      rethrow;
+    } catch (e) {
+      throw Exception("Error inesperado");
+    }
+  }
 }
