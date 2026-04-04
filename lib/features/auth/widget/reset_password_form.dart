@@ -1,4 +1,3 @@
-import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/services/auth_service.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:app_3k_padel/widgets/custom_form_field.dart';
