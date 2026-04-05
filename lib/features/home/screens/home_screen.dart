@@ -6,32 +6,50 @@ import 'package:app_3k_padel/widgets/custom_appbar.dart';
 import 'package:app_3k_padel/widgets/custom_background.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late Future<UserModel?> _userFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _userFuture = UserService().getCurrentUser();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: CustomAppbar(),
-      body: FutureBuilder(
-        future: UserService().getCurrentUser(),
+      body: FutureBuilder<UserModel?>(
+        future: _userFuture,
         builder: (context, snapshot) {
-          //Mientras está cargando
+          // Cargando
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
-          //Si hay error
+
+          // Error
           if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
+            return Center(child: Text(snapshot.error.toString()));
           }
-          //Cuando ya terminó
+
+          // Datos
           final usuario = snapshot.data;
-          //Si no hay usuario
+
           if (usuario == null) {
-            return const Text("No se ha cargado ningún usuario");
+            return const Center(
+              child: Text("No se ha cargado ningún usuario"),
+            );
           }
-          //Usuario OK
+
+          // Usuario OK
           return _buildHome(usuario);
         },
       ),

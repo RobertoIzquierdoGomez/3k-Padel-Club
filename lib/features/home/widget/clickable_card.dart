@@ -51,7 +51,7 @@ class ClickableCard extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 22,
+                          fontSize: 19,
                         ),
                       ),
                     ),

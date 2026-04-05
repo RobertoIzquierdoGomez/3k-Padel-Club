@@ -23,14 +23,6 @@ class AuthGate extends StatelessWidget {
           );
         }
 
-        // Obtenemos la sesión
-        final session = snapshot.data?.session;
-
-        // Si NO hay sesión → Login
-        if (session == null || isRecoveringPassword) {
-          return const LoginScreen();
-        }
-
         return FutureBuilder(
           future: UserService().getCurrentUser(),
           builder: (context, snapshot) {

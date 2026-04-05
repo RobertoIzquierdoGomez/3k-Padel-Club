@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/features/gestion_usuarios/screens/gestion_usuarios_screen.dart';
 import 'package:app_3k_padel/features/home/widget/clickable_card.dart';
 import 'package:app_3k_padel/features/perfil/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class AdminHomeContent extends StatelessWidget {
                 text: "Gestión de usuarios",
                 imagePath: "assets/backgrounds/fondo_gestion_usuarios.png",
                 onTap: () {
-                  print("Pulsado gestion usuarios");
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => GestionUsuariosScreen()));                  
                 },
               ),
               ClickableCard(
