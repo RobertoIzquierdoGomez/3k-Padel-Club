@@ -1,4 +1,5 @@
 
+import 'package:app_3k_padel/features/auth/widget/auth_gate.dart';
 import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,10 @@ class CustomAppbar extends StatelessWidget  implements PreferredSizeWidget{
             primary: false,
             onPressFunction: () {
               supabase.auth.signOut();
+              Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const AuthGate()),
+              (route) => false,
+            );
             },
           ),
         ],

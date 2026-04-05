@@ -1,6 +1,5 @@
 import 'package:app_3k_padel/features/gestion_usuarios/widget/user_card.dart';
 import 'package:app_3k_padel/features/gestion_usuarios/widget/user_edit.dart';
-import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/model/user_model.dart';
 import 'package:app_3k_padel/services/user_service.dart';
 import 'package:app_3k_padel/widgets/custom_appbar.dart';

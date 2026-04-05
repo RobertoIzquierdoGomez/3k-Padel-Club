@@ -34,6 +34,7 @@ class _UserEditState extends State<UserEdit> {
     if (value == null || value.isEmpty) {
       return 'Este campo no puede estar vacío';
     }
+    return null;
   };
 
   @override
