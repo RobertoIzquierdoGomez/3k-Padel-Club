@@ -1,9 +1,11 @@
 import 'package:app_3k_padel/features/gestion_usuarios/widget/user_card.dart';
+import 'package:app_3k_padel/features/gestion_usuarios/widget/user_edit.dart';
 import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/model/user_model.dart';
 import 'package:app_3k_padel/services/user_service.dart';
 import 'package:app_3k_padel/widgets/custom_appbar.dart';
 import 'package:app_3k_padel/widgets/custom_background.dart';
+import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
 class GestionUsuariosScreen extends StatefulWidget {
@@ -15,7 +17,6 @@ class GestionUsuariosScreen extends StatefulWidget {
 
 class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
   late Future<List<UserModel>> _usersFuture;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -56,8 +57,20 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
                 final usuario = usuarios[i];
                 return UserCard(
                   user: usuario,
-                  onDeactivate: () => _disableUser(usuario.idUsuario),
-                  onEditing: () => _editUser(usuario.idUsuario),
+                  onDeactivate: () => _confirmDisableUser(
+                    usuario.idUsuario,
+                    usuario.nombre,
+                    usuario.apellidos,
+                  ),
+                  onEditing: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => UserEdit(
+                        user: usuario,
+                        onEdit: (updatedUser) => _confirmEditUser(updatedUser),
+                      ),
+                    );
+                  },
                 );
               },
             );
@@ -67,21 +80,82 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
     );
   }
 
-  Future<void> _disableUser(String id) async {
-    if (_isLoading) return;
+  Future<void> _confirmDisableUser(
+    String id,
+    String nombre,
+    String apellidos,
+  ) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Desactivar usuario"),
+          content: Text(
+            "¿Seguro que quieres desactivar a $apellidos, $nombre?",
+          ),
+          actions: [
+            CustomButton(
+              text: "Cancelar",
+              isLoading: false,
+              primary: true,
+              onPressFunction: () => Navigator.pop(context, false),
+            ),
+            CustomButton(
+              text: "Eliminar",
+              isLoading: false,
+              primary: false,
+              onPressFunction: () => Navigator.pop(context, true),
+            ),
+          ],
+        );
+      },
+    );
 
-    _isLoading = true;
-
-    await UserService().disableUser(id);
-
-    setState(() {
-      _usersFuture = UserService().getAllUsers();
-    });
-
-    _isLoading = false;
+    if (confirm == true) {
+      await UserService().disableUser(id);
+      setState(() {
+        _usersFuture = UserService().getAllUsers();
+      });
+    }
   }
 
-  Future<void> _editUser(String id) async {
-    await UserService().updateUserByAdmin(id);
+  Future<void> _confirmEditUser(UserModel user) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Editar usuario"),
+          content: Text("¿Seguro que quieres modificar al usuario?"),
+          actions: [
+            CustomButton(
+              text: "No",
+              isLoading: false,
+              primary: true,
+              onPressFunction: () => Navigator.pop(context, false),
+            ),
+            CustomButton(
+              text: "Sí",
+              isLoading: false,
+              primary: false,
+              onPressFunction: () => Navigator.pop(context, true),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      await UserService().updateUserByAdmin(
+        user.idUsuario,
+        user.nombre,
+        user.apellidos,
+        user.nivel,
+        user.tipoMiembro,
+      );
+      setState(() {
+        _usersFuture = UserService().getAllUsers();
+      });
+      Navigator.pop(context); 
+    }
   }
 }

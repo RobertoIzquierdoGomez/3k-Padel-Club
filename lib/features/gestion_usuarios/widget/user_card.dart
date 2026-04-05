@@ -99,6 +99,7 @@ class UserCard extends StatelessWidget {
               text: "Editar",
               isLoading: false,
               primary: true,
+              onPressFunction: onEditing,
             ),
             const SizedBox(width: 10),
             CustomButton(
@@ -164,6 +165,7 @@ class UserCard extends StatelessWidget {
               text: "Editar",
               isLoading: false,
               primary: true,
+              onPressFunction: onEditing,
             ),
             const SizedBox(width: 10),
             CustomButton(

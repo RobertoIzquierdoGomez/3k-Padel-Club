@@ -53,7 +53,21 @@ class UserService {
   //Actualizar información del usuario por el administrador
   Future<void> updateUserByAdmin(
     String id,
-  ) async {}
+    String nombre,
+    String apellidos,
+    double nivel,
+    bool tipoMiembro
+  ) async {
+    await _db
+        .from('usuarios')
+        .update({
+          "nombre": nombre,
+          "apellidos": apellidos,
+          "nivel": nivel,
+          "tipo_miembro": tipoMiembro
+        })
+        .eq('id_usuario', id);
+  }
 
   //Desactivar usuario por el administrador
   Future<void> disableUser(String id) async {
