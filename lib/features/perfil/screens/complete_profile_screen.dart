@@ -1,4 +1,4 @@
-
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/perfil/widget/complete_profile_form.dart';
 import 'package:app_3k_padel/widgets/custom_background.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +12,15 @@ class CompleteProfileScreen extends StatefulWidget{
 }
 
 class _CompleteProfileState extends State<CompleteProfileScreen>{
+
+  @override
+  void initState() {
+    super.initState();
+    AppLogger.info(
+      "Mostrando pantalla de completar perfil",
+      tag: "AUTH_PROFILE",
+    );
+  }
 
   @override
   Widget build(BuildContext context){

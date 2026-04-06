@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/model/user_model.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -28,11 +29,9 @@ class UserCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                // 📱 MOBILE
                 if (constraints.maxWidth < 500) {
                   return _buildMobileLayout();
                 }
-                // 💻 DESKTOP
                 return _buildDesktopLayout();
               },
             ),
@@ -42,9 +41,6 @@ class UserCard extends StatelessWidget {
     );
   }
 
-  // =======================
-  // 📱 MOBILE LAYOUT
-  // =======================
   Widget _buildMobileLayout() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,14 +95,26 @@ class UserCard extends StatelessWidget {
               text: "Editar",
               isLoading: false,
               primary: true,
-              onPressFunction: onEditing,
+              onPressFunction: () {
+                AppLogger.info(
+                  "Pulsado editar usuario ${user.idUsuario}",
+                  tag: "USERS_ADMIN",
+                );
+                onEditing();
+              },
             ),
             const SizedBox(width: 10),
             CustomButton(
               text: "Eliminar",
               isLoading: false,
               primary: false,
-              onPressFunction: onDeactivate,
+              onPressFunction: () {
+                AppLogger.info(
+                  "Pulsado eliminar usuario ${user.idUsuario}",
+                  tag: "USERS_ADMIN",
+                );
+                onDeactivate();
+              },
             ),
           ],
         ),
@@ -114,9 +122,6 @@ class UserCard extends StatelessWidget {
     );
   }
 
-  // =======================
-  // 💻 DESKTOP LAYOUT
-  // =======================
   Widget _buildDesktopLayout() {
     return Row(
       children: [
@@ -128,7 +133,6 @@ class UserCard extends StatelessWidget {
 
         const SizedBox(width: 16),
 
-        // 🔹 INFO
         Expanded(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -158,21 +162,32 @@ class UserCard extends StatelessWidget {
           ),
         ),
 
-        // 🔹 BOTONES
         Row(
           children: [
             CustomButton(
               text: "Editar",
               isLoading: false,
               primary: true,
-              onPressFunction: onEditing,
+              onPressFunction: () {
+                AppLogger.info(
+                  "Pulsado editar usuario ${user.idUsuario}",
+                  tag: "USERS_ADMIN",
+                );
+                onEditing();
+              },
             ),
             const SizedBox(width: 10),
             CustomButton(
               text: "Eliminar",
               isLoading: false,
               primary: false,
-              onPressFunction: onDeactivate,
+              onPressFunction: () {
+                AppLogger.info(
+                  "Pulsado eliminar usuario ${user.idUsuario}",
+                  tag: "USERS_ADMIN",
+                );
+                onDeactivate();
+              },
             ),
           ],
         ),
@@ -180,9 +195,6 @@ class UserCard extends StatelessWidget {
     );
   }
 
-  // =======================
-  // 🔹 BADGE
-  // =======================
   Widget _buildBadge(String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -196,7 +208,4 @@ class UserCard extends StatelessWidget {
       ),
     );
   }
-
-
-
 }

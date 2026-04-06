@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/auth/widget/reset_password_form.dart';
 import 'package:app_3k_padel/features/auth/widget/reset_password_success.dart';
 import 'package:app_3k_padel/main.dart';
@@ -20,6 +21,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   void initState() {
     super.initState();
+    AppLogger.info("Mostrando pantalla de cambio de contraseña", tag: "NAV");
     _checkSession();
   }
 
@@ -36,6 +38,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         ),
       );
     } else if (!hasSession) {
+      AppLogger.warning("Sesión no disponible o enlace inválido", tag: "AUTH_CHANGE_PASS");
       currentChild = Center(
         child: Text("Enlace inválido o sesión no disponible"),
       );
@@ -46,6 +49,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         setState(() {
           isSuccess = true;
         });
+        AppLogger.info("Cambio de contraseña completado → mostrando success", tag: "AUTH_CHANGE_PASS");
       },);
     }
 
@@ -58,8 +62,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   Future<void> _checkSession() async {
+    AppLogger.info("Comprobando sesión del usuario", tag: "AUTH_CHANGE_PASS");
     await Future.delayed(const Duration(milliseconds: 500));
     final Session? session = supabase.auth.currentSession;
+    AppLogger.info("Sesión ${session != null ? "válida" : "no disponible"}", tag: "AUTH_CHANGE_PASS");
     setState(() {
       hasSession = session != null;
       isLoading = false;

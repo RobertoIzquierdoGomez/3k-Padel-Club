@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/auth/widget/register_succes.dart';
 import 'package:app_3k_padel/services/auth_service.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
@@ -111,7 +112,9 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Future<void> _registerUser() async {
+    AppLogger.info("Validando formulario de registro", tag: "AUTH_REGISTER");
     if (_registerForm.currentState?.validate() ?? false) {
+      AppLogger.info("Formulario de registro correcto", tag: "AUTH_REGISTER");
       setState(() {
         errorMessage = null;
         isLoading = true;
@@ -121,18 +124,38 @@ class _RegisterFormState extends State<RegisterForm> {
       final String pass = passCtrol.text;
 
       try {
+        AppLogger.info("Enviando petición de registro", tag: "AUTH_REGISTER");
         final User? user = await AuthService().register(email, pass);
 
+        if (!mounted) return;
+
         if (user != null) {
+          AppLogger.info(
+            "Usuario registrado correctamente",
+            tag: "AUTH_REGISTER",
+          );
           setState(() {
             registerSuccess = true;
           });
+        } else {
+          AppLogger.warning(
+            "Registro sin usuario devuelto",
+            tag: "AUTH_REGISTER",
+          );
         }
       } on AuthException catch (e) {
+        AppLogger.error(
+          "Error registrando usuario: ${e.message}",
+          tag: "AUTH_REGISTER",
+        );
         setState(() {
           errorMessage = e.message;
         });
       } catch (e) {
+        AppLogger.error(
+          "Error inesperado en registro: $e",
+          tag: "AUTH_REGISTER",
+        );
         setState(() {
           errorMessage = "Error inesperado";
         });
@@ -143,6 +166,11 @@ class _RegisterFormState extends State<RegisterForm> {
           });
         }
       }
+    } else {
+      AppLogger.warning(
+        "Formulario de registro inválido",
+        tag: "AUTH_REGISTER",
+      );
     }
   }
 }

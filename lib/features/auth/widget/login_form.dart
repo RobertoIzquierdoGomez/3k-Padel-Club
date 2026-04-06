@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/auth/screens/register_screen.dart';
 import 'package:app_3k_padel/features/auth/widget/recover_password_dialog.dart';
 import 'package:app_3k_padel/main.dart';
@@ -92,6 +93,7 @@ class _LoginState extends State<LoginForm> {
                 cursor: SystemMouseCursors.click,
                 child: GestureDetector(
                   onTap: () {
+                    AppLogger.info("Pulsado recuperar contraseña", tag: "NAV");
                     isRecoveringPassword = true;
 
                     showDialog(
@@ -134,6 +136,10 @@ class _LoginState extends State<LoginForm> {
                           isLoading: isLoadingLogin,
                           primary: false,
                           onPressFunction: () {
+                            AppLogger.info(
+                              'Pulsado "Registrarme" y cambio a RegisterScreen',
+                              tag: "NAV",
+                            );
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -164,6 +170,10 @@ class _LoginState extends State<LoginForm> {
                             isLoading: isLoadingLogin,
                             primary: false,
                             onPressFunction: () {
+                              AppLogger.info(
+                                'Pulsado "Registrarme" y cambio a RegisterScreen',
+                                tag: "NAV",
+                              );
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -190,7 +200,9 @@ class _LoginState extends State<LoginForm> {
   }
 
   Future<void> _login() async {
+    AppLogger.info("Login iniciado", tag: "AUTH");
     if (_loginForm.currentState?.validate() ?? false) {
+      AppLogger.info("Formulario válido", tag: "AUTH");
       setState(() {
         errorMessage = null;
         isLoadingLogin = true;
@@ -200,12 +212,16 @@ class _LoginState extends State<LoginForm> {
       final password = passwordCtrl.text;
 
       try {
+        AppLogger.info("Intentando login", tag: "AUTH");
         await AuthService().login(email, password);
+        AppLogger.info("Sesión iniciada correctamente", tag: "AUTH");
       } on AuthException catch (e) {
+        AppLogger.error("Fallo de inicio de sesión: ${e.message}", tag: "AUTH");
         setState(() {
           errorMessage = e.message;
         });
       } catch (e) {
+        AppLogger.error("Fallo de inicio de sesión: $e", tag: "AUTH");
         setState(() {
           errorMessage = "Error inesperado";
         });
@@ -216,6 +232,8 @@ class _LoginState extends State<LoginForm> {
           });
         }
       }
+    } else {
+      AppLogger.warning("Formulario login inválido", tag: "AUTH");
     }
   }
 }

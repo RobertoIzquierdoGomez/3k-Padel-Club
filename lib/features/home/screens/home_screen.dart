@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/home/widget/admin_home_content.dart';
 import 'package:app_3k_padel/features/home/widget/user_home_content.dart';
 import 'package:app_3k_padel/model/user_model.dart';
@@ -19,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    AppLogger.info("Cargando HomeScreen", tag: "HOME");
     _userFuture = UserService().getCurrentUser();
   }
 
@@ -32,11 +34,13 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, snapshot) {
           // Cargando
           if (snapshot.connectionState == ConnectionState.waiting) {
+            AppLogger.info("Cargando datos del usuario en Home", tag: "HOME");
             return const Center(child: CircularProgressIndicator());
           }
 
           // Error
           if (snapshot.hasError) {
+            AppLogger.error("Error cargando usuario en Home: ${snapshot.error}", tag: "HOME");
             return Center(child: Text(snapshot.error.toString()));
           }
 
@@ -44,10 +48,13 @@ class _HomeScreenState extends State<HomeScreen> {
           final usuario = snapshot.data;
 
           if (usuario == null) {
+            AppLogger.warning("Usuario null en Home", tag: "HOME");
             return const Center(
               child: Text("No se ha cargado ningún usuario"),
             );
           }
+
+          AppLogger.info("Usuario cargado correctamente en Home", tag: "HOME");
 
           // Usuario OK
           return _buildHome(usuario);
@@ -58,6 +65,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHome(UserModel user) {
     final isAdmin = user.rol == "admin";
+
+    AppLogger.info(
+      isAdmin
+          ? "Usuario admin → mostrando AdminHomeContent"
+          : "Usuario normal → mostrando UserHomeContent",
+      tag: "HOME",
+    );
 
     return Fondo(
       imagePath: isAdmin

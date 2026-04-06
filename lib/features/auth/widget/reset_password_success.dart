@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/auth/widget/auth_gate.dart';
 import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
@@ -40,8 +41,19 @@ class ResetPasswordSuccess extends StatelessWidget {
               isLoading: false,
               primary: true,
               onPressFunction: () {
+                AppLogger.info(
+                  'Pulsado botón "Volver" en ResetPasswordSuccess',
+                  tag: "NAV",
+                );
+
                 if (isRecovery) {
+                  AppLogger.info(
+                    "Flujo recovery → cerrando sesión y redirigiendo a AuthGate",
+                    tag: "AUTH_CHANGE_PASS",
+                  );
+
                   supabase.auth.signOut();
+
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
@@ -50,6 +62,11 @@ class ResetPasswordSuccess extends StatelessWidget {
                     (route) => false,
                   );
                 } else {
+                  AppLogger.info(
+                    "Flujo normal → volviendo a pantalla anterior",
+                    tag: "NAV",
+                  );
+
                   Navigator.pop(context);
                 }
               },

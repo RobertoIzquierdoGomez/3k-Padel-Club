@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/services/auth_service.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
@@ -32,6 +33,7 @@ class _RecoverPasswordDialogState extends State<RecoverPasswordDialog> {
   @override
   void initState() {
     super.initState();
+    AppLogger.info("Inicio flujo recuperación contraseña", tag: "AUTH_RECOVERY");
     emailCtrl = TextEditingController(text: widget.initialEmail);
   }
 
@@ -96,8 +98,10 @@ class _RecoverPasswordDialogState extends State<RecoverPasswordDialog> {
           isLoading: false,
           primary: false,
           onPressFunction: () async {
+            AppLogger.info("Pulsado cancelar", tag: "NAV");
             isRecoveringPassword = false;
             await supabase.auth.signOut();
+            if (!mounted) return;
             Navigator.pop(context);
           },
         ),
@@ -122,21 +126,25 @@ class _RecoverPasswordDialogState extends State<RecoverPasswordDialog> {
 
     try {
       if (step == 1) {
+        AppLogger.info("Step 1: Enviar código", tag: "AUTH_RECOVERY");
         await AuthService().sendOtpEmail(emailCtrl.text);
-
+        if (!mounted) return;
         setState(() => step = 2);
+        AppLogger.info("Step 1: Código enviado correctamente → pasando al Step 2", tag: "AUTH_RECOVERY");
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Código enviado')),
         );
       } else if (step == 2) {
+        AppLogger.info("Step 2: Verificando OTP", tag: "AUTH_RECOVERY");
         await supabase.auth.verifyOTP(
           email: emailCtrl.text,
           token: otpCtrl.text,
           type: OtpType.email,
         );
-
+        if (!mounted) return;
         setState(() => step = 3);
+        AppLogger.info("Step 2: OTP verificado → pasando a Step 3", tag: "AUTH_RECOVERY");
       } else if (step == 3) {
         final password = newPasswordCtrl.text.trim();
         final repeatPassword = repeatPasswordCtrl.text;
@@ -146,7 +154,6 @@ class _RecoverPasswordDialogState extends State<RecoverPasswordDialog> {
           throw Exception ('Introduce una contraseña');
         }
 
-        
         if (!passwordRegex.hasMatch(password)) {
           throw Exception ('Debe tener mayúsculas, minúsculas y números');
         }
@@ -154,15 +161,15 @@ class _RecoverPasswordDialogState extends State<RecoverPasswordDialog> {
         if (password != repeatPassword) {
           throw Exception("Las contraseñas no coinciden");
         }
-
+        AppLogger.info("Step 3: realizando cambio de contraseña", tag: "AUTH_RECOVERY");
         await supabase.auth.updateUser(
           UserAttributes(password: password),
         );
-
         await supabase.auth.signOut();
+        AppLogger.info("Contraseña actualizada y sesión cerrada", tag: "AUTH_RECOVERY");
 
         isRecoveringPassword = false;
-
+        if (!mounted) return;
         Navigator.pop(context);
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -172,10 +179,12 @@ class _RecoverPasswordDialogState extends State<RecoverPasswordDialog> {
         );
       }
     } on AuthException catch (e) {
+      AppLogger.error("Error en recuperación contraseña: ${e.message}", tag: "AUTH");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message)),
       );
     } catch (e) {
+      AppLogger.error("Error inesperado en recuperación contraseña: $e", tag: "AUTH");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
       );

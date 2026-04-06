@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/services/auth_service.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:app_3k_padel/widgets/custom_form_field.dart';
@@ -81,11 +82,13 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
                 labelText: "Nueva contraseña",
                 validator: validatorNewPass,
                 controller: passwordCtrl,
+                obscureText: true,
               ),
               CustomFormField(
                 labelText: "Repite contraseña",
                 validator: validatorRepeatPass,
                 controller: repeatPasswordCtrl,
+                obscureText: true,
               ),
               if (errorMessage != null && errorMessage!.isNotEmpty)
                 Text(
@@ -107,7 +110,9 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
   }
 
   Future<void> _updatePassword() async {
+    AppLogger.info("Pulsado cambio de contraseña", tag: "AUTH_CHANGE_PASS");
     if (_resetPasswordForm.currentState?.validate() ?? false) {
+      AppLogger.info("Formulario de cambio de contraseña correcto", tag: "AUTH_CHANGE_PASS");
       setState(() {
         errorMessage = null;
         isLoading = true;
@@ -116,15 +121,20 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
       final String password = passwordCtrl.text;
 
       try {
+        AppLogger.info("Ejecutando cambio de contraseña", tag: "AUTH_CHANGE_PASS");
         await AuthService().updatePassword(password);
         passwordCtrl.clear();
         repeatPasswordCtrl.clear();
+        AppLogger.info("Cambio de contraseña ejecutado correctamente", tag: "AUTH_CHANGE_PASS");
         widget.onSuccess();
+
       } on AuthException catch (e) {
+        AppLogger.error("Error cambiando contraseña: ${e.message}", tag: "AUTH_CHANGE_PASS");
         setState(() {
           errorMessage = e.message;
         });
       } catch (e) {
+        AppLogger.error("Error inesperado al cambiar contraseña: $e", tag: "AUTH_CHANGE_PASS");
         setState(() {
           errorMessage = "Error inesperado";
         });
@@ -135,6 +145,8 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
           });
         }
       }
+    } else {
+      AppLogger.warning("Formulario de cambio de contraseña inválido", tag: "AUTH_CHANGE_PASS");
     }
   }
 }

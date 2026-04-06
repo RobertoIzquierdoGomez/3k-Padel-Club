@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/model/user_model.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:app_3k_padel/widgets/custom_form_field.dart';
@@ -24,6 +25,10 @@ class _UserEditState extends State<UserEdit> {
   @override
   void initState() {
     super.initState();
+    AppLogger.info(
+      "Abierto diálogo de edición para usuario ${widget.user.idUsuario}",
+      tag: "USERS_ADMIN",
+    );
     nombreCtrl.text = widget.user.nombre;
     apellidosCtrl.text = widget.user.apellidos;
     nivel = widget.user.nivel;
@@ -87,6 +92,10 @@ class _UserEditState extends State<UserEdit> {
                   isLoading: false,
                   primary: false,
                   onPressFunction: () {
+                    AppLogger.info(
+                      "Cancelada edición de usuario ${widget.user.idUsuario}",
+                      tag: "USERS_ADMIN",
+                    );
                     Navigator.pop(this.context);
                   },
                 ),
@@ -95,9 +104,24 @@ class _UserEditState extends State<UserEdit> {
                   isLoading: false,
                   primary: true,
                   onPressFunction: () {
-                    if (!_userForm.currentState!.validate()) return;
+                    AppLogger.info(
+                      "Intento de edición de usuario ${widget.user.idUsuario}",
+                      tag: "USERS_ADMIN",
+                    );
+
+                    if (!_userForm.currentState!.validate()) {
+                      AppLogger.warning(
+                        "Formulario inválido al editar usuario ${widget.user.idUsuario}",
+                        tag: "USERS_ADMIN",
+                      );
+                      return;
+                    }
 
                     if (nivel == null || tipoMiembro == null) {
+                      AppLogger.warning(
+                        "Campos incompletos al editar usuario ${widget.user.idUsuario}",
+                        tag: "USERS_ADMIN",
+                      );
                       setState(() {
                         errorMessage = "Completa todos los campos";
                       });
@@ -114,6 +138,11 @@ class _UserEditState extends State<UserEdit> {
                       rol: widget.user.rol,
                       perfilCompleto: widget.user.tipoMiembro,
                       activo: widget.user.activo
+                    );
+
+                    AppLogger.info(
+                      "Datos validados correctamente para usuario ${widget.user.idUsuario}",
+                      tag: "USERS_ADMIN",
                     );
 
                     widget.onEdit(updatedUser);

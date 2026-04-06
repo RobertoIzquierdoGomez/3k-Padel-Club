@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/auth/widget/auth_gate.dart';
 import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/services/user_service.dart';
@@ -20,9 +21,8 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
   bool isLoading = false;
   double nivel = 1;
 
-  String? errorMessage; //Mensaje de error para el intento del login.
+  String? errorMessage;
 
-  //Validador para asegurar que se introduce algún nombre
   String? Function(String?) validatorNombre = (String? value) {
     value = value?.trim();
     if (value == null || value.isEmpty) {
@@ -31,7 +31,6 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
     return null;
   };
 
-  //Validador para asegurar que se introduce algún apellido
   String? Function(String?) validatorApellidos = (String? value) {
     value = value?.trim();
     if (value == null || value.isEmpty) {
@@ -100,17 +99,23 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
     );
   }
 
-  //Función para actualizar el usuario
   Future<void> _updateUser() async {
+    AppLogger.info("Intento de completar perfil", tag: "AUTH_PROFILE");
+
     if (_completeProfileForm.currentState?.validate() ?? false) {
+      AppLogger.info("Formulario de completar perfil válido", tag: "AUTH_PROFILE");
+
       setState(() {
         errorMessage = null;
         isLoading = true;
       });
+
       final String nombre = nombreCtrl.text;
       final String apellidos = apellidosCtrl.text;
 
       try {
+        AppLogger.info("Actualizando datos de perfil", tag: "AUTH_PROFILE");
+
         await UserService().updateProfile(
           supabase.auth.currentUser!.id,
           nombre,
@@ -118,12 +123,15 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           nivel,
         );
 
-        //Navigator manual fuerza la recarga manual del AuthGate. Esto evita que se quede en la pantalla de completar perfil una vez ya completado.
+        AppLogger.info("Perfil actualizado correctamente", tag: "AUTH_PROFILE");
+        if(!mounted) return;
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const AuthGate()),
           (route) => false,
         );
       } catch (e) {
+        AppLogger.error("Error actualizando perfil: $e", tag: "AUTH_PROFILE");
+
         setState(() {
           errorMessage = "Error al guardar el usuario";
         });
@@ -132,9 +140,10 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           setState(() {
             isLoading = false;
           });
-          
         }
       }
+    } else {
+      AppLogger.warning("Formulario de completar perfil inválido", tag: "AUTH_PROFILE");
     }
   }
 }

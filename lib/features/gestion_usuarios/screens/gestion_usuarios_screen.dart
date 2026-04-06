@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/gestion_usuarios/widget/user_card.dart';
 import 'package:app_3k_padel/features/gestion_usuarios/widget/user_edit.dart';
 import 'package:app_3k_padel/model/user_model.dart';
@@ -20,6 +21,7 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
   @override
   void initState() {
     super.initState();
+    AppLogger.info("Cargando pantalla de gestión de usuarios", tag: "USERS_ADMIN");
     _usersFuture = UserService().getAllUsers();
   }
 
@@ -35,11 +37,13 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
           builder: (context, snapshot) {
             // Cargando
             if (snapshot.connectionState == ConnectionState.waiting) {
+              AppLogger.info("Cargando lista de usuarios", tag: "USERS_ADMIN");
               return const Center(child: CircularProgressIndicator());
             }
 
             // Error
             if (snapshot.hasError) {
+              AppLogger.error("Error cargando usuarios: ${snapshot.error}", tag: "USERS_ADMIN");
               return Center(child: Text(snapshot.error.toString()));
             }
 
@@ -47,8 +51,11 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
             final usuarios = snapshot.data;
 
             if (usuarios == null || usuarios.isEmpty) {
+              AppLogger.warning("Lista de usuarios vacía", tag: "USERS_ADMIN");
               return const Center(child: Text("No hay usuarios"));
             }
+
+            AppLogger.info("Usuarios cargados correctamente: ${usuarios.length}", tag: "USERS_ADMIN");
 
             return ListView.builder(
               itemCount: usuarios.length,
@@ -62,6 +69,7 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
                     usuario.apellidos,
                   ),
                   onEditing: () {
+                    AppLogger.info("Editando usuario ${usuario.idUsuario}", tag: "USERS_ADMIN");
                     showDialog(
                       context: context,
                       builder: (_) => UserEdit(
@@ -84,6 +92,8 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
     String nombre,
     String apellidos,
   ) async {
+    AppLogger.info("Intento de desactivar usuario $id ($apellidos, $nombre)", tag: "USERS_ADMIN");
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -111,14 +121,21 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
     );
 
     if (confirm == true) {
+      AppLogger.info("Confirmada desactivación de usuario $id", tag: "USERS_ADMIN");
       await UserService().disableUser(id);
+      AppLogger.info("Usuario $id desactivado correctamente", tag: "USERS_ADMIN");
+
       setState(() {
         _usersFuture = UserService().getAllUsers();
       });
+    } else {
+      AppLogger.info("Cancelada desactivación de usuario $id", tag: "USERS_ADMIN");
     }
   }
 
   Future<void> _confirmEditUser(UserModel user) async {
+    AppLogger.info("Intento de editar usuario ${user.idUsuario}", tag: "USERS_ADMIN");
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -129,13 +146,13 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
             CustomButton(
               text: "No",
               isLoading: false,
-              primary: true,
+              primary: false,
               onPressFunction: () => Navigator.pop(context, false),
             ),
             CustomButton(
               text: "Sí",
               isLoading: false,
-              primary: false,
+              primary: true,
               onPressFunction: () => Navigator.pop(context, true),
             ),
           ],
@@ -144,6 +161,8 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
     );
 
     if (confirm == true) {
+      AppLogger.info("Confirmada edición de usuario ${user.idUsuario}", tag: "USERS_ADMIN");
+
       await UserService().updateUserByAdmin(
         user.idUsuario,
         user.nombre,
@@ -151,10 +170,16 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
         user.nivel,
         user.tipoMiembro,
       );
+
+      AppLogger.info("Usuario ${user.idUsuario} actualizado correctamente", tag: "USERS_ADMIN");
+
       setState(() {
         _usersFuture = UserService().getAllUsers();
       });
+      if(!mounted) return;
       Navigator.pop(context); 
+    } else {
+      AppLogger.info("Cancelada edición de usuario ${user.idUsuario}", tag: "USERS_ADMIN");
     }
   }
 }

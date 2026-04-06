@@ -1,4 +1,4 @@
-
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/auth/widget/auth_gate.dart';
 import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
@@ -28,7 +28,12 @@ class CustomAppbar extends StatelessWidget  implements PreferredSizeWidget{
             isLoading: false,
             primary: false,
             onPressFunction: () {
+              AppLogger.info("Pulsado logout", tag: "AUTH");
+
               supabase.auth.signOut();
+
+              AppLogger.info("Sesión cerrada, redirigiendo a AuthGate", tag: "AUTH");
+
               Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (_) => const AuthGate()),
               (route) => false,

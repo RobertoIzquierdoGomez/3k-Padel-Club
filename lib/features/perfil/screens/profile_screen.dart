@@ -1,3 +1,4 @@
+import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/auth/screens/reset_password_Screen.dart';
 import 'package:app_3k_padel/features/perfil/widget/perfil_label_widget.dart';
 import 'package:app_3k_padel/services/user_service.dart';
@@ -11,6 +12,8 @@ class PerfilScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLogger.info("Mostrando pantalla de perfil", tag: "PROFILE");
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: CustomAppbar(),
@@ -37,18 +40,24 @@ class PerfilScreen extends StatelessWidget {
                   builder: (context, snapshot) {
                     //Mientras está cargando
                     if (snapshot.connectionState == ConnectionState.waiting) {
+                      AppLogger.info("Cargando datos de perfil", tag: "PROFILE");
                       return const CircularProgressIndicator();
                     }
                     //Si hay error
                     if (snapshot.hasError) {
+                      AppLogger.error("Error cargando perfil: ${snapshot.error}", tag: "PROFILE");
                       return Text(snapshot.error.toString());
                     }
                     //Cuando ya terminó
                     final usuario = snapshot.data;
                     //Si no hay usuario
                     if (usuario == null) {
+                      AppLogger.warning("Usuario null en perfil", tag: "PROFILE");
                       return const Text("No se ha cargado ningún usuario");
                     }
+
+                    AppLogger.info("Perfil cargado correctamente", tag: "PROFILE");
+
                     //Usuario OK
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -84,6 +93,10 @@ class PerfilScreen extends StatelessWidget {
                 isLoading: false,
                 primary: false,
                 onPressFunction: () {
+                  AppLogger.info(
+                    "Acceso a cambio de contraseña desde perfil",
+                    tag: "NAV_PROFILE",
+                  );
                   Navigator.push(
                     context,
                     MaterialPageRoute(
