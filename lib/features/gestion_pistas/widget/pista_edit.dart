@@ -1,38 +1,33 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
-import 'package:app_3k_padel/model/user_model.dart';
+import 'package:app_3k_padel/model/pista_model.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:app_3k_padel/widgets/custom_form_field.dart';
-import 'package:app_3k_padel/widgets/custom_level_field.dart';
 import 'package:flutter/material.dart';
 
-class UserEdit extends StatefulWidget {
-  final UserModel user;
-  final Function(UserModel) onEdit;
-  const UserEdit({super.key, required this.user, required this.onEdit});
+class PistaEdit extends StatefulWidget {
+  final PistaModel pista;
+  final Function(PistaModel) onEdit;
+  const PistaEdit({super.key, required this.pista, required this.onEdit});
 
   @override
-  State<UserEdit> createState() => _UserEditState();
+  State<PistaEdit> createState() => _PistaEditState();
 }
 
-class _UserEditState extends State<UserEdit> {
-  final GlobalKey<FormState> _userForm = GlobalKey<FormState>();
+class _PistaEditState extends State<PistaEdit> {
+  final GlobalKey<FormState> _updatePistaForm = GlobalKey<FormState>();
   final nombreCtrl = TextEditingController();
-  final apellidosCtrl = TextEditingController();
-  double? nivel;
-  bool? tipoMiembro;
+  bool? estado;
   String? errorMessage;
 
   @override
   void initState() {
     super.initState();
     AppLogger.info(
-      "Abierto diálogo de edición para usuario ${widget.user.idUsuario}",
-      tag: "USERS_ADMIN",
+      "Abierto diálogo de edición para pista ${widget.pista.idPista}",
+      tag: "PISTAS_ADMIN",
     );
-    nombreCtrl.text = widget.user.nombre;
-    apellidosCtrl.text = widget.user.apellidos;
-    nivel = widget.user.nivel;
-    tipoMiembro = widget.user.tipoMiembro;
+    nombreCtrl.text = widget.pista.nombre;
+    estado = widget.pista.estado;
   }
 
   String? Function(String?) validatorRellenarCampo = (String? value) {
@@ -46,35 +41,25 @@ class _UserEditState extends State<UserEdit> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Editar usuario"),
+      title: const Text("Editar pista"),
       content: Form(
-        key: _userForm,
+        key: _updatePistaForm,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 20.0,
+          spacing: 20,
           children: [
             CustomFormField(
               labelText: "Nombre",
               controller: nombreCtrl,
               validator: validatorRellenarCampo,
             ),
-            CustomFormField(
-              labelText: "Apellidos",
-              controller: apellidosCtrl,
-              validator: validatorRellenarCampo,
-            ),
-            CustomLevelField(
-              onChanged: (value) {
-                nivel = value;
-              },
-            ),
             SwitchListTile(
-              title: const Text("Miembro 3K"),
-              value: tipoMiembro ?? false,
+              title: const Text("Activa / Inactiva"),
+              value: estado ?? false,
               onChanged: (value) {
                 setState(() {
-                  tipoMiembro = value;
+                  estado = value;
                 });
               },
             ),
@@ -94,8 +79,8 @@ class _UserEditState extends State<UserEdit> {
                   primary: false,
                   onPressFunction: () {
                     AppLogger.info(
-                      "Cancelada edición de usuario ${widget.user.idUsuario}",
-                      tag: "USERS_ADMIN",
+                      "Cancelada edición de pista ${widget.pista.idPista}",
+                      tag: "PISTAS_ADMIN",
                     );
                     Navigator.pop(this.context);
                   },
@@ -106,22 +91,22 @@ class _UserEditState extends State<UserEdit> {
                   primary: true,
                   onPressFunction: () {
                     AppLogger.info(
-                      "Intento de edición de usuario ${widget.user.idUsuario}",
-                      tag: "USERS_ADMIN",
+                      "Intento de edición de pista ${widget.pista.idPista}",
+                      tag: "PISTAS_ADMIN",
                     );
 
-                    if (!_userForm.currentState!.validate()) {
+                    if (!_updatePistaForm.currentState!.validate()) {
                       AppLogger.warning(
-                        "Formulario inválido al editar usuario ${widget.user.idUsuario}",
-                        tag: "USERS_ADMIN",
+                        "Formulario inválido al editar pista ${widget.pista.idPista}",
+                        tag: "PISTAS_ADMIN",
                       );
                       return;
                     }
 
-                    if (nivel == null || tipoMiembro == null) {
+                    if (estado == null) {
                       AppLogger.warning(
-                        "Campos incompletos al editar usuario ${widget.user.idUsuario}",
-                        tag: "USERS_ADMIN",
+                        "Campos incompletos al editar pista ${widget.pista.idPista}",
+                        tag: "PISTAS_ADMIN",
                       );
                       setState(() {
                         errorMessage = "Completa todos los campos";
@@ -129,24 +114,18 @@ class _UserEditState extends State<UserEdit> {
                       return;
                     }
 
-                    final updatedUser = UserModel(
-                      idUsuario: widget.user.idUsuario,
+                    final updatedPista = PistaModel(
+                      idPista: widget.pista.idPista,
                       nombre: nombreCtrl.text.trim(),
-                      apellidos: apellidosCtrl.text.trim(),
-                      correo: widget.user.correo,
-                      nivel: nivel!,
-                      tipoMiembro: tipoMiembro!,
-                      rol: widget.user.rol,
-                      perfilCompleto: widget.user.tipoMiembro,
-                      activo: widget.user.activo
+                      estado: estado!,
                     );
 
                     AppLogger.info(
-                      "Datos validados correctamente para usuario ${widget.user.idUsuario}",
-                      tag: "USERS_ADMIN",
+                      "Datos validados correctamente para pista ${widget.pista.idPista}",
+                      tag: "PISTAS_ADMIN",
                     );
 
-                    widget.onEdit(updatedUser);
+                    widget.onEdit(updatedPista);
                   },
                 ),
               ],

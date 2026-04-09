@@ -1,4 +1,5 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
+import 'package:app_3k_padel/features/gestion_pistas/screens/gestion_pistas_screen.dart';
 import 'package:app_3k_padel/features/gestion_usuarios/screens/gestion_usuarios_screen.dart';
 import 'package:app_3k_padel/features/home/widget/clickable_card.dart';
 import 'package:app_3k_padel/features/perfil/screens/profile_screen.dart';
@@ -62,6 +63,7 @@ class AdminHomeContent extends StatelessWidget {
                     "Acceso a Gestión de pistas",
                     tag: "NAV_ADMIN",
                   );
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => GestionPistasScreen()));
                 },
               ),
               ClickableCard(
