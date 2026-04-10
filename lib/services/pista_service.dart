@@ -18,7 +18,7 @@ class PistaService {
 
       return data.map((e) => PistaModel.fromJson(e)).toList();
     } catch (e) {
-      AppLogger.error("Error obteniendo pistas: $e", tag: "USER_SERVICE");
+      AppLogger.error("Error obteniendo pistas: $e", tag: "PISTA_SERVICE");
       rethrow;
     }
   }

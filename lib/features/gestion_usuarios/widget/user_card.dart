@@ -1,5 +1,6 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/model/user_model.dart';
+import 'package:app_3k_padel/widgets/custom_badge.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
@@ -80,9 +81,9 @@ class UserCard extends StatelessWidget {
 
         Row(
           children: [
-            _buildBadge("Nivel ${user.nivel}"),
+            CustomBadge(text: "Nivel ${user.nivel}"),
             const SizedBox(width: 8),
-            _buildBadge(user.tipoMiembro ? "Miembro 3K" : "Miembro"),
+            CustomBadge(text: user.tipoMiembro ? "Miembro 3K" : "Miembro"),
           ],
         ),
 
@@ -153,9 +154,9 @@ class UserCard extends StatelessWidget {
               const SizedBox(height: 6),
               Row(
                 children: [
-                  _buildBadge("Nivel ${user.nivel}"),
+                  CustomBadge(text: "Nivel ${user.nivel}"),
                   const SizedBox(width: 8),
-                  _buildBadge(user.tipoMiembro ? "Miembro 3K" : "Miembro"),
+                  CustomBadge(text: user.tipoMiembro ? "Miembro 3K" : "Miembro"),
                 ],
               ),
             ],
@@ -192,20 +193,6 @@ class UserCard extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _buildBadge(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(fontSize: 12),
-      ),
     );
   }
 }

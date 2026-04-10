@@ -7,8 +7,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:app_3k_padel/features/auth/screens/login_screen.dart';
 import 'package:app_3k_padel/main.dart';
 
-class AuthGate extends StatelessWidget {
+class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
+
+  @override
+  State<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends State<AuthGate> {
+  Future? _userFuture;
 
   @override
   Widget build(BuildContext context) {
@@ -24,40 +31,60 @@ class AuthGate extends StatelessWidget {
           );
         }
 
-        // Obtenemos la sesión
         final session = snapshot.data?.session;
 
         // Si NO hay sesión → Login
         if (session == null || isRecoveringPassword) {
-          AppLogger.info("No hay sesión o está recuperando contraseña, mostrando login", tag: "NAV_GATE");
+          AppLogger.info(
+              "No hay sesión o está recuperando contraseña, mostrando login",
+              tag: "NAV_GATE");
+
+          // 🔥 IMPORTANTE: resetear el future
+          _userFuture = null;
+
           return const LoginScreen();
         }
 
+        // 🔥 Solo creamos el future una vez por sesión
+        if (_userFuture == null) {
+          _userFuture = UserService().getCurrentUser();
+        }
+
         return FutureBuilder(
-          future: UserService().getCurrentUser(),
+          future: _userFuture,
           builder: (context, snapshot) {
-            //Mientras está cargando
+            // Mientras está cargando
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Scaffold(body: SizedBox());
             }
-            //Si hay error
+
+            // Si hay error
             if (snapshot.hasError) {
-              AppLogger.error("Error cargando usuario: ${snapshot.error}", tag: "AUTH_GATE");
+              AppLogger.error(
+                  "Error cargando usuario: ${snapshot.error}",
+                  tag: "AUTH_GATE");
               return Text(snapshot.error.toString());
             }
-            //Cuando ya terminó
+
             final usuario = snapshot.data;
+
             if (usuario == null) {
-              AppLogger.info("Usuario cargado null, mostrando inicio de sesión", tag: "AUTH_GATE");
+              AppLogger.info(
+                  "Usuario cargado null, mostrando inicio de sesión",
+                  tag: "AUTH_GATE");
               return const LoginScreen();
             }
 
-            if(!usuario.perfilCompleto){
-              AppLogger.info("Usuario cargado, pendiente completar perfil. Mostrando CompleteProfileScreen", tag: "AUTH_GATE");
+            if (!usuario.perfilCompleto) {
+              AppLogger.info(
+                  "Usuario cargado, pendiente completar perfil. Mostrando CompleteProfileScreen",
+                  tag: "AUTH_GATE");
               return const CompleteProfileScreen();
             }
 
-            AppLogger.info("Usuario cargado correctamente. Mostrando HomeScreen", tag: "AUTH_GATE");
+            AppLogger.info(
+                "Usuario cargado correctamente. Mostrando HomeScreen",
+                tag: "AUTH_GATE");
             return const HomeScreen();
           },
         );

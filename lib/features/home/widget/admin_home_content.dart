@@ -3,6 +3,7 @@ import 'package:app_3k_padel/features/gestion_pistas/screens/gestion_pistas_scre
 import 'package:app_3k_padel/features/gestion_usuarios/screens/gestion_usuarios_screen.dart';
 import 'package:app_3k_padel/features/home/widget/clickable_card.dart';
 import 'package:app_3k_padel/features/perfil/screens/profile_screen.dart';
+import 'package:app_3k_padel/features/reservas/screens/gestion_reservas_admin_screen.dart';
 import 'package:flutter/material.dart';
 
 class AdminHomeContent extends StatelessWidget {
@@ -43,6 +44,12 @@ class AdminHomeContent extends StatelessWidget {
                     "Acceso a Gestión de reservas",
                     tag: "NAV_ADMIN",
                   );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GestionReservasAdminScreen(),
+                    ),
+                  );
                 },
               ),
               ClickableCard(
@@ -63,7 +70,12 @@ class AdminHomeContent extends StatelessWidget {
                     "Acceso a Gestión de pistas",
                     tag: "NAV_ADMIN",
                   );
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => GestionPistasScreen()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GestionPistasScreen(),
+                    ),
+                  );
                 },
               ),
               ClickableCard(

@@ -1,5 +1,4 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
-import 'package:app_3k_padel/model/pista_model.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:app_3k_padel/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
