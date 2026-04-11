@@ -4,7 +4,7 @@ import 'package:app_3k_padel/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 
 class InsertPista extends StatefulWidget {
-  final Function(String nombre, bool estado) onCreate;
+  final Future<String?> Function(String nombre, bool estado) onCreate;
 
   const InsertPista({super.key, required this.onCreate});
 
@@ -83,11 +83,15 @@ class _InsertPistaState extends State<InsertPista> {
                   text: "Añadir pista",
                   isLoading: false,
                   primary: true,
-                  onPressFunction: () {
+                  onPressFunction: () async {
                     AppLogger.info(
                       "Intento de inserción de pista ${nombreCtrl.text}",
                       tag: "PISTAS_ADMIN",
                     );
+
+                    setState(() {
+                      errorMessage = null;
+                    });
 
                     if (!_insertPistaForm.currentState!.validate()) {
                       AppLogger.warning(
@@ -113,10 +117,16 @@ class _InsertPistaState extends State<InsertPista> {
                       tag: "PISTAS_ADMIN",
                     );
 
-                    widget.onCreate(
+                    final error = await widget.onCreate(
                       nombreCtrl.text.trim(),
                       estado!,
                     );
+
+                    if (error != null) {
+                      setState(() {
+                        errorMessage = error;
+                      });
+                    }
                   },
                 ),
               ],

@@ -1,14 +1,17 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/reservas/widget/insert_reserva_admin.dart';
 import 'package:app_3k_padel/features/reservas/widget/reserva_admin_card.dart';
+import 'package:app_3k_padel/features/reservas/widget/reserva_edit.dart';
 import 'package:app_3k_padel/model/pista_model.dart';
 import 'package:app_3k_padel/model/reservas_model.dart';
+import 'package:app_3k_padel/services/participacion_reserva_service.dart'; // 🔥 NUEVO
 import 'package:app_3k_padel/services/pista_service.dart';
 import 'package:app_3k_padel/services/reservas_service.dart';
 import 'package:app_3k_padel/widgets/custom_appbar.dart';
 import 'package:app_3k_padel/widgets/custom_background.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class GestionReservasAdminScreen extends StatefulWidget {
   const GestionReservasAdminScreen({super.key});
@@ -82,9 +85,30 @@ class _GestionReservasAdminScreenState
               itemCount: reservas.length,
               itemBuilder: (context, i) {
                 final reserva = reservas[i];
+
                 return ReservaAdminCard(
                   reserva: reserva,
-                  onEditing: () {},
+                  onEditing: () async {
+                    final pistas = await _pistasFuture;
+
+                    AppLogger.info(
+                      "Editando reserva ${reserva.idReserva}",
+                      tag: "RESERVAS_ADMIN",
+                    );
+
+                    showDialog(
+                      context: context,
+                      builder: (_) => ReservaEdit(
+                        reserva: reserva,
+                        pistas: pistas,
+                        onEdit: (updatedReserva) =>
+                            _confirmEditReserva(updatedReserva),
+
+                        // 🔥 NUEVO (SIN TOCAR LO ANTIGUO)
+                        onDeleteParticipacion: _deleteParticipacion,
+                      ),
+                    );
+                  },
                   onDelete: () => _confirmDeleteReserva(
                     reserva.idReserva,
                     reserva.pista,
@@ -102,18 +126,40 @@ class _GestionReservasAdminScreenState
         onPressed: () async {
           final pistas = await _pistasFuture;
           AppLogger.info("Insertando pista", tag: "PISTAS_ADMIN");
+
           showDialog(
-    context: context,
-    builder: (_) => InsertReservaAdmin(
-      pistas: pistas,
-      onCreate: _confirmInsertReserva,
-    ),
-  );
+            context: context,
+            builder: (_) => InsertReservaAdmin(
+              pistas: pistas,
+              onCreate: _confirmInsertReserva,
+            ),
+          );
         },
         tooltip: 'Añadir Pista',
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  Future<void> _deleteParticipacion(String idReserva, String idUsuario) async {
+    AppLogger.info(
+      "Eliminando participación (reserva: $idReserva, usuario: $idUsuario)",
+      tag: "RESERVAS_ADMIN",
+    );
+
+    await ParticipacionReservaService().deleteParticipacion(
+      idReserva,
+      idUsuario,
+    );
+
+    AppLogger.info(
+      "Participación eliminada correctamente (reserva: $idReserva, usuario: $idUsuario)",
+      tag: "RESERVAS_ADMIN",
+    );
+
+    setState(() {
+      _reservasFuture = ReservasService().getAllReservas();
+    });
   }
 
   Future<void> _confirmDeleteReserva(
@@ -159,7 +205,9 @@ class _GestionReservasAdminScreenState
         "Confirmada eliminación de reserva $id",
         tag: "RESERVAS_ADMIN",
       );
+
       await ReservasService().deleteReserva(id);
+
       AppLogger.info(
         "Reserva $id eliminada correctamente",
         tag: "RESERVAS_ADMIN",
@@ -176,7 +224,7 @@ class _GestionReservasAdminScreenState
     }
   }
 
-  Future<void> _confirmInsertReserva(
+  Future<String?> _confirmInsertReserva(
     String idPista,
     DateTime fecha,
     String horaInicio,
@@ -187,6 +235,7 @@ class _GestionReservasAdminScreenState
       "Intento de insertar reserva de $idPista para el día $fecha de $horaInicio a $horaFin",
       tag: "RESERVAS_ADMIN",
     );
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -217,22 +266,110 @@ class _GestionReservasAdminScreenState
         tag: "RESERVAS_ADMIN",
       );
 
-      await ReservasService().insertReserva(idPista,fecha, horaInicio, horaFin, capacidadMaxima: capacidadMaxima);
+      try {
+        await ReservasService().insertReserva(
+          idPista,
+          fecha,
+          horaInicio,
+          horaFin,
+          capacidadMaxima: capacidadMaxima,
+        );
 
+        AppLogger.info("Reserva añadida correctamente", tag: "RESERVAS_ADMIN");
+
+        setState(() {
+          _reservasFuture = ReservasService().getAllReservas();
+        });
+
+        if (!mounted) return null;
+        Navigator.pop(context);
+
+        return null;
+      } catch (e) {
+        AppLogger.error("Error insertando reserva: $e", tag: "RESERVAS_ADMIN");
+        if (e is PostgrestException) {
+          return e.message;
+        }
+        return "Error inesperado";
+      }
+    } else {
+      AppLogger.info("Cancelada inserción de reserva", tag: "RESERVAS_ADMIN");
+      return null;
+    }
+  }
+
+  Future<String?> _confirmEditReserva(ReservasModel reserva) async {
+    AppLogger.info(
+      "Intento de editar reserva ${reserva.idReserva}",
+      tag: "RESERVAS_ADMIN",
+    );
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Editar reserva"),
+          content: Text("¿Seguro que quieres modificar la reserva?"),
+          actions: [
+            CustomButton(
+              text: "No",
+              isLoading: false,
+              primary: false,
+              onPressFunction: () => Navigator.pop(context, false),
+            ),
+            CustomButton(
+              text: "Sí",
+              isLoading: false,
+              primary: true,
+              onPressFunction: () => Navigator.pop(context, true),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
       AppLogger.info(
-        "Reserva de $idPista para el día $fecha de $horaInicio a $horaFin añadida correctamente",
+        "Confirmada edición de reserva ${reserva.idReserva}",
         tag: "RESERVAS_ADMIN",
       );
-      setState(() {
-        _reservasFuture = ReservasService().getAllReservas();
-      });
-      if (!mounted) return;
-      Navigator.pop(context);
+
+      try {
+        await ReservasService().updateReserva(
+          reserva.idReserva,
+          reserva.idPista,
+          reserva.fecha,
+          reserva.horaInicio,
+          reserva.horaFin,
+          capacidadMaxima: reserva.capacidadMaxima,
+        );
+
+        AppLogger.info(
+          "Reserva actualizada correctamente",
+          tag: "RESERVAS_ADMIN",
+        );
+
+        setState(() {
+          _reservasFuture = ReservasService().getAllReservas();
+        });
+
+        if (!mounted) return null;
+        Navigator.pop(context);
+
+        return null;
+      } catch (e) {
+        AppLogger.error("Error editando reserva: $e", tag: "RESERVAS_ADMIN");
+        if (e is PostgrestException) {
+          return e.message;
+        }
+        return "Error inesperado";
+      }
     } else {
       AppLogger.info(
-        "Cancelada inserción de reserva de $idPista para el día $fecha de $horaInicio a $horaFin",
+        "Cancelada edición de reserva ${reserva.idReserva}",
         tag: "RESERVAS_ADMIN",
       );
+      return null;
     }
   }
 }

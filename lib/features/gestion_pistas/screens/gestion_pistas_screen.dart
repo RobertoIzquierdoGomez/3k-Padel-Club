@@ -97,7 +97,10 @@ class _GestionPistasScreenState extends State<GestionPistasScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           AppLogger.info("Insertando pista", tag: "PISTAS_ADMIN");
-          showDialog(context: context, builder: (_) => InsertPista(onCreate: _confirmInsertPista));
+          showDialog(
+            context: context,
+            builder: (_) => InsertPista(onCreate: _confirmInsertPista),
+          );
         },
         tooltip: 'Añadir Pista',
         child: const Icon(Icons.add),
@@ -151,7 +154,7 @@ class _GestionPistasScreenState extends State<GestionPistasScreen> {
     }
   }
 
-  Future<void> _confirmEditPista(PistaModel pista) async {
+  Future<String?> _confirmEditPista(PistaModel pista) async {
     AppLogger.info(
       "Intento de editar pista ${pista.idPista}",
       tag: "PISTAS_ADMIN",
@@ -187,21 +190,30 @@ class _GestionPistasScreenState extends State<GestionPistasScreen> {
         tag: "PISTAS_ADMIN",
       );
 
-      await PistaService().updatePista(
-        pista.idPista,
-        pista.nombre,
-        pista.estado,
-      );
+      try {
+        await PistaService().updatePista(
+          pista.idPista,
+          pista.nombre,
+          pista.estado,
+        );
 
-      AppLogger.info(
-        "Pista ${pista.idPista} actualizada correctamente",
-        tag: "PISTAS_ADMIN",
-      );
-      setState(() {
-        _pistasFuture = PistaService().getAllPistas();
-      });
-      if (!mounted) return;
-      Navigator.pop(context);
+        AppLogger.info(
+          "Pista ${pista.idPista} actualizada correctamente",
+          tag: "PISTAS_ADMIN",
+        );
+
+        setState(() {
+          _pistasFuture = PistaService().getAllPistas();
+        });
+
+        if (!mounted) return null;
+        Navigator.pop(context);
+
+        return null; // ✅ OK
+      } catch (e) {
+        AppLogger.error("Error editando pista: $e", tag: "PISTAS_ADMIN");
+        return e.toString(); // 🔥 DEVUELVES ERROR
+      }
     } else {
       AppLogger.info(
         "Cancelada edición de pista ${pista.idPista}",
@@ -210,11 +222,8 @@ class _GestionPistasScreenState extends State<GestionPistasScreen> {
     }
   }
 
-  Future<void> _confirmInsertPista(String nombre, bool estado) async {
-    AppLogger.info(
-      "Intento de insertar pista $nombre",
-      tag: "PISTAS_ADMIN",
-    );
+  Future<String?> _confirmInsertPista(String nombre, bool estado) async {
+    AppLogger.info("Intento de insertar pista $nombre", tag: "PISTAS_ADMIN");
 
     final confirm = await showDialog<bool>(
       context: context,
@@ -246,17 +255,26 @@ class _GestionPistasScreenState extends State<GestionPistasScreen> {
         tag: "PISTAS_ADMIN",
       );
 
-      await PistaService().insertPista(nombre, estado);
+      try {
+        await PistaService().insertPista(nombre, estado);
 
-      AppLogger.info(
-        "Pista $nombre añadida correctamente",
-        tag: "PISTAS_ADMIN",
-      );
-      setState(() {
-        _pistasFuture = PistaService().getAllPistas();
-      });
-      if (!mounted) return;
-      Navigator.pop(context);
+        AppLogger.info(
+          "Pista $nombre añadida correctamente",
+          tag: "PISTAS_ADMIN",
+        );
+
+        setState(() {
+          _pistasFuture = PistaService().getAllPistas();
+        });
+
+        if (!mounted) return null;
+        Navigator.pop(context);
+
+        return null;
+      } catch (e) {
+        AppLogger.error("Error insertando pista: $e", tag: "PISTAS_ADMIN");
+        return e.toString();
+      }
     } else {
       AppLogger.info(
         "Cancelada inserción de pista $nombre",

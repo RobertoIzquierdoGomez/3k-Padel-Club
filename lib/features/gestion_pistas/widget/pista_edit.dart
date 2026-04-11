@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class PistaEdit extends StatefulWidget {
   final PistaModel pista;
-  final Function(PistaModel) onEdit;
+  final Future<String?> Function(PistaModel) onEdit;
   const PistaEdit({super.key, required this.pista, required this.onEdit});
 
   @override
@@ -89,11 +89,15 @@ class _PistaEditState extends State<PistaEdit> {
                   text: "Editar",
                   isLoading: false,
                   primary: true,
-                  onPressFunction: () {
+                  onPressFunction: () async {
                     AppLogger.info(
                       "Intento de edición de pista ${widget.pista.idPista}",
                       tag: "PISTAS_ADMIN",
                     );
+
+                    setState(() {
+                      errorMessage = null;
+                    });
 
                     if (!_updatePistaForm.currentState!.validate()) {
                       AppLogger.warning(
@@ -125,7 +129,13 @@ class _PistaEditState extends State<PistaEdit> {
                       tag: "PISTAS_ADMIN",
                     );
 
-                    widget.onEdit(updatedPista);
+                    final error = await widget.onEdit(updatedPista);
+
+                    if (error != null) {
+                      setState(() {
+                        errorMessage = error;
+                      });
+                    }
                   },
                 ),
               ],

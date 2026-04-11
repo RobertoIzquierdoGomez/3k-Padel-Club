@@ -24,16 +24,30 @@ class ReservasModel {
     required this.capacidadMaxima,
   });
 
+  static String _parseHora(dynamic hora) {
+    if (hora == null) return "";
+
+    final str = hora.toString().trim();
+
+    if (str.length >= 5) {
+      return str.substring(0, 5);
+    }
+
+    return str;
+  }
+
   factory ReservasModel.fromJson(Map<String, dynamic> json) {
     return ReservasModel(
       idReserva: (json['id_reserva'] as String?) ?? "",
       idPista: (json['id_pista'] as String?) ?? "",
       pista: json['pistas']?['nombre'] ?? "",
-      fecha: DateTime.parse((json['fecha'])),
-      horaInicio: json['hora_inicio'] ?? "",
-      horaFin: json['hora_fin'] ?? "",
-      capacidadMaxima: json['capacidad_maxima'],
-      estado: json['estado'],
+      fecha: DateTime.parse(json['fecha']),
+      
+      horaInicio: _parseHora(json['hora_inicio']),
+      horaFin: _parseHora(json['hora_fin']),
+
+      capacidadMaxima: json['capacidad_maxima'] ?? 0,
+      estado: json['estado'] ?? false,
       usuarios: (json['participacion_reserva'] as List<dynamic>? ?? [])
           .map((e) => UserModel.fromJson(e['usuario']))
           .toList(),
@@ -45,8 +59,10 @@ class ReservasModel {
       'id_reserva': idReserva,
       'id_pista': idPista,
       'fecha': fecha.toIso8601String(),
+
       'hora_inicio': horaInicio,
       'hora_fin': horaFin,
+
       'capacidad_maxima': capacidadMaxima,
       'estado': estado,
     };
@@ -56,7 +72,6 @@ class ReservasModel {
     if (usuarios.isEmpty) return 0.0;
 
     final suma = usuarios.fold(0.0, (acc, user) => acc + user.nivel);
-
     return (suma / usuarios.length);
   }
 

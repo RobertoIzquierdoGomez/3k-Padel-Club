@@ -1,37 +1,39 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/model/pista_model.dart';
+import 'package:app_3k_padel/model/reservas_model.dart';
+import 'package:app_3k_padel/widgets/custom_badge.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
-class InsertReservaAdmin extends StatefulWidget {
+class ReservaEdit extends StatefulWidget {
+  final ReservasModel reserva;
   final List<PistaModel> pistas;
-  final Future<String?> Function(
-    String idPista,
-    DateTime fecha,
-    String horaInicio,
-    String horaFin, {
-    int? capacidadMaxima,
-  })
-  onCreate;
-  const InsertReservaAdmin({
+  final Future<String?> Function(ReservasModel) onEdit;
+  final Function(String idReserva, String idUsuario) onDeleteParticipacion;
+
+  const ReservaEdit({
     super.key,
+    required this.reserva,
     required this.pistas,
-    required this.onCreate,
+    required this.onEdit,
+    required this.onDeleteParticipacion,
   });
 
   @override
-  State<InsertReservaAdmin> createState() => _InsertReservaAdminState();
+  State<ReservaEdit> createState() => _ReservaEditState();
 }
 
-class _InsertReservaAdminState extends State<InsertReservaAdmin> {
-  final GlobalKey<FormState> _insertReservaForm = GlobalKey<FormState>();
+class _ReservaEditState extends State<ReservaEdit> {
+  final GlobalKey<FormState> _editReservaForm = GlobalKey<FormState>();
   String? selectedPistaId;
   DateTime? selectedFecha;
   String? horaInicio;
   String? horaFin;
   bool editarCapacidad = false;
   int? capacidadMaxima;
+  bool mostrarUsuarios = false;
   String? errorMessage;
+  late TextEditingController controllerFecha;
   final List<String> horas = [
     "09:00",
     "09:30",
@@ -65,17 +67,35 @@ class _InsertReservaAdminState extends State<InsertReservaAdmin> {
   void initState() {
     super.initState();
     AppLogger.info(
-      "Abierto diálogo de creación de reserva",
+      "Abierto diálogo de edición de reserva",
       tag: "RESERVAS_ADMIN",
     );
+    selectedPistaId = widget.reserva.idPista;
+    selectedFecha = widget.reserva.fecha;
+    horaInicio = widget.reserva.horaInicio;
+    horaFin = widget.reserva.horaFin;
+    capacidadMaxima = widget.reserva.capacidadMaxima;
+    controllerFecha = TextEditingController(
+      text: selectedFecha != null
+          ? "${selectedFecha!.day.toString().padLeft(2, '0')}/"
+                "${selectedFecha!.month.toString().padLeft(2, '0')}/"
+                "${selectedFecha!.year}"
+          : "",
+    );
+  }
+
+  @override
+  void dispose() {
+    controllerFecha.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Añadir reserva"),
+      title: const Text("Editar reserva"),
       content: Form(
-        key: _insertReservaForm,
+        key: _editReservaForm,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -108,24 +128,28 @@ class _InsertReservaAdminState extends State<InsertReservaAdmin> {
                 labelText: "Fecha",
                 border: OutlineInputBorder(),
               ),
-              controller: TextEditingController(
-                text: selectedFecha != null
-                    ? "${selectedFecha!.day.toString().padLeft(2, '0')}/"
-                          "${selectedFecha!.month.toString().padLeft(2, '0')}/"
-                          "${selectedFecha!.year}"
-                    : "",
-              ),
+              controller: controllerFecha,
               onTap: () async {
+                final now = DateTime.now();
+
                 final picked = await showDatePicker(
                   context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime.now(),
+                  initialDate: selectedFecha ?? now,
+                  firstDate:
+                      selectedFecha != null && selectedFecha!.isBefore(now)
+                      ? selectedFecha!
+                      : now,
                   lastDate: DateTime(2100),
                 );
 
                 if (picked != null) {
                   setState(() {
                     selectedFecha = picked;
+
+                    controllerFecha.text =
+                        "${picked.day.toString().padLeft(2, '0')}/"
+                        "${picked.month.toString().padLeft(2, '0')}/"
+                        "${picked.year}";
                   });
                 }
               },
@@ -215,6 +239,14 @@ class _InsertReservaAdminState extends State<InsertReservaAdmin> {
                   return null;
                 },
               ),
+            CustomButton(
+              text: "Ver usuarios",
+              isLoading: false,
+              primary: false,
+              onPressFunction: () {
+                _mostrarUsuariosDialog();
+              },
+            ),
             if (errorMessage != null && errorMessage!.isNotEmpty)
               Text(
                 errorMessage!,
@@ -231,19 +263,19 @@ class _InsertReservaAdminState extends State<InsertReservaAdmin> {
                   primary: false,
                   onPressFunction: () {
                     AppLogger.info(
-                      "Cancelada inserción de reserva $selectedFecha para $selectedPistaId de $horaInicio a $horaFin",
+                      "Cancelada edición de reserva $selectedFecha para $selectedPistaId de $horaInicio a $horaFin",
                       tag: "RESERVAS_ADMIN",
                     );
                     Navigator.pop(this.context);
                   },
                 ),
                 CustomButton(
-                  text: "Añadir reserva",
+                  text: "Editar",
                   isLoading: false,
                   primary: true,
                   onPressFunction: () async {
                     AppLogger.info(
-                      "Intento de inserción de reserva $selectedFecha para $selectedPistaId de $horaInicio a $horaFin",
+                      "Intento de edición de reserva $selectedFecha para $selectedPistaId de $horaInicio a $horaFin",
                       tag: "RESERVAS_ADMIN",
                     );
 
@@ -251,26 +283,12 @@ class _InsertReservaAdminState extends State<InsertReservaAdmin> {
                       errorMessage = null;
                     });
 
-                    if (!_insertReservaForm.currentState!.validate()) {
+                    if (!_editReservaForm.currentState!.validate()) {
                       AppLogger.warning(
-                        "Formulario inválido al insertar reserva $selectedFecha para $selectedPistaId de $horaInicio a $horaFin",
+                        "Formulario inválido al editar reserva $selectedFecha para $selectedPistaId de $horaInicio a $horaFin",
                         tag: "RESERVAS_ADMIN",
                       );
                       return;
-                    }
-
-                    if (horaInicio != null && horaFin != null) {
-                      if (_toMinutes(horaInicio!) >= _toMinutes(horaFin!)) {
-                        AppLogger.warning(
-                          "Hora fin menor o igual que hora inicio $selectedFecha para $selectedPistaId de $horaInicio a $horaFin",
-                          tag: "RESERVAS_ADMIN",
-                        );
-                        setState(() {
-                          errorMessage =
-                              "La hora final no puede ser anterior que la hora inicial";
-                        });
-                        return;
-                      }
                     }
 
                     AppLogger.info(
@@ -278,13 +296,22 @@ class _InsertReservaAdminState extends State<InsertReservaAdmin> {
                       tag: "RESERVAS_ADMIN",
                     );
 
-                    final error = await widget.onCreate(
-                      selectedPistaId!,
-                      selectedFecha!,
-                      horaInicio!,
-                      horaFin!,
-                      capacidadMaxima: editarCapacidad ? capacidadMaxima : null,
+                    final updatedReserva = ReservasModel(
+                      idReserva: widget.reserva.idReserva,
+                      idPista: selectedPistaId!,
+                      pista: widget.reserva.pista,
+                      fecha: selectedFecha!,
+                      horaInicio: horaInicio!,
+                      horaFin: horaFin!,
+                      estado: widget.reserva.estado,
+                      usuarios: widget.reserva.usuarios,
+                      capacidadMaxima: editarCapacidad
+                          ? capacidadMaxima ?? widget.reserva.capacidadMaxima
+                          : widget.reserva.capacidadMaxima,
                     );
+
+                    // 🔥 CLAVE
+                    final error = await widget.onEdit(updatedReserva);
 
                     if (error != null) {
                       setState(() {
@@ -299,5 +326,101 @@ class _InsertReservaAdminState extends State<InsertReservaAdmin> {
         ),
       ),
     );
+  }
+
+  void _mostrarUsuariosDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Usuarios en la reserva"),
+          content: SizedBox(
+            width: 400,
+            height: 300, // puedes ajustar
+            child: widget.reserva.usuarios.isEmpty
+                ? const Center(child: Text("No hay usuarios"))
+                : ListView.builder(
+                    itemCount: widget.reserva.usuarios.length,
+                    itemBuilder: (context, i) {
+                      final usuario = widget.reserva.usuarios[i];
+                      return ListTile(
+                        leading: const CircleAvatar(
+                          radius: 22,
+                          backgroundColor: Color.fromARGB(255, 217, 221, 63),
+                          child: Icon(Icons.person, color: Colors.black),
+                        ),
+                        title: Text("${usuario.apellidos}, ${usuario.nombre}"),
+                        subtitle: Row(
+                          spacing: 10,
+                          children: [
+                            Text("Nivel:"),
+                            CustomBadge(text: usuario.nivel.toString()),
+                          ],
+                        ),
+                        trailing: TextButton(
+                          onPressed: () {
+                            _confirmDeleteParticipacion(
+                              widget.reserva.idReserva,
+                              usuario.idUsuario,
+                              usuario.nombre,
+                              usuario.apellidos,
+                            );
+                          },
+                          child: const Text("Eliminar"),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+          actions: [
+            CustomButton(
+              text: "Cerrar",
+              isLoading: false,
+              primary: false,
+              onPressFunction: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmDeleteParticipacion(
+    String idReserva,
+    String idUsuario,
+    String nombre,
+    String apellidos,
+  ) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Eliminar participación"),
+          content: Text("¿Seguro que quieres eliminar a $nombre $apellidos?"),
+          actions: [
+            CustomButton(
+              text: "Cancelar",
+              isLoading: false,
+              primary: true,
+              onPressFunction: () => Navigator.pop(context, false),
+            ),
+            CustomButton(
+              text: "Eliminar",
+              isLoading: false,
+              primary: false,
+              onPressFunction: () => Navigator.pop(context, true),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      widget.onDeleteParticipacion(idReserva, idUsuario);
+      if (!mounted) return;
+      Navigator.pop(context);
+    }
   }
 }

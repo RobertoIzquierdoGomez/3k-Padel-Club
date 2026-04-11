@@ -44,6 +44,13 @@ class _UserEditState extends State<UserEdit> {
   };
 
   @override
+  void dispose() {
+    nombreCtrl.dispose();
+    apellidosCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text("Editar usuario"),

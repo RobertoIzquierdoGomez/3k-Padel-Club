@@ -109,6 +109,13 @@ class ReservaAdminCard extends StatelessWidget {
                         text: "Editar",
                         isLoading: false,
                         primary: true,
+                        onPressFunction: () {
+                          AppLogger.info(
+                            "Pulsado editar reserva ${reserva.idReserva}",
+                            tag: "RESERVAS_ADMIN",
+                          );
+                          onEditing();
+                        },
                       ),
                       const SizedBox(width: 10),
                       CustomButton(
@@ -190,7 +197,18 @@ class ReservaAdminCard extends StatelessWidget {
         ),
         Row(
           children: [
-            CustomButton(text: "Editar", isLoading: false, primary: true),
+            CustomButton(
+              text: "Editar",
+              isLoading: false,
+              primary: true,
+              onPressFunction: () {
+                AppLogger.info(
+                  "Pulsado editar reserva ${reserva.idReserva}",
+                  tag: "RESERVAS_ADMIN",
+                );
+                onEditing();
+              },
+            ),
             const SizedBox(width: 10),
             CustomButton(
               text: "Eliminar",

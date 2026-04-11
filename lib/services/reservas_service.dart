@@ -48,24 +48,76 @@ class ReservasService {
     try {
       AppLogger.info("Eliminando reserva $id", tag: "RESERVA_SERVICE");
       await _db.from('reservas').delete().eq('id_reserva', id);
-      AppLogger.info("Reserva $id eliminada correctamente", tag: "RESERVA_SERVICE");
+      AppLogger.info(
+        "Reserva $id eliminada correctamente",
+        tag: "RESERVA_SERVICE",
+      );
     } catch (e) {
-      AppLogger.error("Error eliminando reserva $id: $e", tag: "RESERVA_SERVICE");
+      AppLogger.error(
+        "Error eliminando reserva $id: $e",
+        tag: "RESERVA_SERVICE",
+      );
       rethrow;
     }
   }
 
-  Future<void> insertReserva(String idPista, DateTime fecha, String horaInicio, String horaFin, {int? capacidadMaxima}) async {
-    AppLogger.info("Insertando reserva con $idPista para el día $fecha de $horaInicio a $horaFin", tag: "RESERVA_SERVICE");
-    await _db
-      .from('reservas')
-      .insert({
+  Future<void> insertReserva(
+    String idPista,
+    DateTime fecha,
+    String horaInicio,
+    String horaFin, {
+    int? capacidadMaxima,
+  }) async {
+    try {
+      AppLogger.info(
+        "Insertando reserva con $idPista para el día $fecha de $horaInicio a $horaFin",
+        tag: "RESERVA_SERVICE",
+      );
+      await _db.from('reservas').insert({
         'id_pista': idPista,
         'fecha': fecha.toIso8601String(),
         'hora_inicio': horaInicio,
         'hora_fin': horaFin,
-        if(capacidadMaxima != null) 'capacidad_maxima': capacidadMaxima
+        if (capacidadMaxima != null) 'capacidad_maxima': capacidadMaxima,
       });
+    } catch (e) {
+      AppLogger.error(
+        "Error insertando reserva con pista $idPista para el día $fecha de $horaInicio a $horaFin: $e",
+        tag: "RESERVA_SERVICE",
+      );
+      rethrow;
+    }
+  }
 
+  Future<void> updateReserva(
+    String id,
+    String idPista,
+    DateTime fecha,
+    String horaInicio,
+    String horaFin, {
+    int? capacidadMaxima,
+  }) async {
+    try {
+      AppLogger.info("Actualizando reserva $id", tag: "RESERVA_SERVICE");
+
+      await _db
+          .from('reservas')
+          .update({
+            "id_pista": idPista,
+            'fecha': fecha.toIso8601String(),
+            'hora_inicio': horaInicio,
+            'hora_fin': horaFin,
+            if (capacidadMaxima != null) 'capacidad_maxima': capacidadMaxima,
+          })
+          .eq('id_reserva', id);
+
+      AppLogger.info(
+        "Reserva actualizada correctamente para reserva $id",
+        tag: "RESERVA_SERVICE",
+      );
+    } catch (e) {
+      AppLogger.error("Error actualizando reserva $id", tag: "RESERVA_SERVICE");
+      rethrow;
+    }
   }
 }
