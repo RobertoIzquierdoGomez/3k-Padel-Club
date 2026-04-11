@@ -219,6 +219,7 @@ class _GestionPistasScreenState extends State<GestionPistasScreen> {
         "Cancelada edición de pista ${pista.idPista}",
         tag: "PISTAS_ADMIN",
       );
+      return null;
     }
   }
 
@@ -280,6 +281,7 @@ class _GestionPistasScreenState extends State<GestionPistasScreen> {
         "Cancelada inserción de pista $nombre",
         tag: "PISTAS_ADMIN",
       );
+      return null;
     }
   }
 }
