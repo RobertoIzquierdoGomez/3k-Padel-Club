@@ -1,6 +1,9 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
+import 'package:app_3k_padel/features/reservas/widget/insert_reserva_admin.dart';
 import 'package:app_3k_padel/features/reservas/widget/reserva_admin_card.dart';
+import 'package:app_3k_padel/model/pista_model.dart';
 import 'package:app_3k_padel/model/reservas_model.dart';
+import 'package:app_3k_padel/services/pista_service.dart';
 import 'package:app_3k_padel/services/reservas_service.dart';
 import 'package:app_3k_padel/widgets/custom_appbar.dart';
 import 'package:app_3k_padel/widgets/custom_background.dart';
@@ -18,6 +21,7 @@ class GestionReservasAdminScreen extends StatefulWidget {
 class _GestionReservasAdminScreenState
     extends State<GestionReservasAdminScreen> {
   late Future<List<ReservasModel>> _reservasFuture;
+  late Future<List<PistaModel>> _pistasFuture;
 
   @override
   void initState() {
@@ -27,6 +31,7 @@ class _GestionReservasAdminScreenState
       tag: "RESERVAS_ADMIN",
     );
     _reservasFuture = ReservasService().getAllReservas();
+    _pistasFuture = PistaService().getAllPistas();
   }
 
   @override
@@ -82,6 +87,7 @@ class _GestionReservasAdminScreenState
                   onEditing: () {},
                   onDelete: () => _confirmDeleteReserva(
                     reserva.idReserva,
+                    reserva.pista,
                     reserva.fechaFormateada,
                     reserva.horaInicioFormateada,
                     reserva.horaFinFormateada,
@@ -92,17 +98,33 @@ class _GestionReservasAdminScreenState
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final pistas = await _pistasFuture;
+          AppLogger.info("Insertando pista", tag: "PISTAS_ADMIN");
+          showDialog(
+    context: context,
+    builder: (_) => InsertReservaAdmin(
+      pistas: pistas,
+      onCreate: _confirmInsertReserva,
+    ),
+  );
+        },
+        tooltip: 'Añadir Pista',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 
   Future<void> _confirmDeleteReserva(
     String id,
+    String nombrePista,
     String fecha,
     String horaInicio,
     String horaFin,
   ) async {
     AppLogger.info(
-      "Intento de eliminar reserva $id. Fecha $fecha de $horaInicio a $horaFin",
+      "Intento de eliminar reserva $id. Pista $nombrePista con fecha $fecha de $horaInicio a $horaFin",
       tag: "RESERVAS_ADMIN",
     );
 
@@ -112,7 +134,7 @@ class _GestionReservasAdminScreenState
         return AlertDialog(
           title: const Text("Eliminar reserva"),
           content: Text(
-            "¿Seguro que quieres eliminar la reserva del $fecha de $horaInicio a $horaFin?",
+            "¿Seguro que quieres eliminar la reserva de la pista $nombrePista el día $fecha de $horaInicio a $horaFin?",
           ),
           actions: [
             CustomButton(
@@ -149,6 +171,66 @@ class _GestionReservasAdminScreenState
     } else {
       AppLogger.info(
         "Cancelada eliminación de reserva $id",
+        tag: "RESERVAS_ADMIN",
+      );
+    }
+  }
+
+  Future<void> _confirmInsertReserva(
+    String idPista,
+    DateTime fecha,
+    String horaInicio,
+    String horaFin, {
+    int? capacidadMaxima,
+  }) async {
+    AppLogger.info(
+      "Intento de insertar reserva de $idPista para el día $fecha de $horaInicio a $horaFin",
+      tag: "RESERVAS_ADMIN",
+    );
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Añadir reserva"),
+          content: Text("¿Seguro que quieres añadir la reserva?"),
+          actions: [
+            CustomButton(
+              text: "No",
+              isLoading: false,
+              primary: false,
+              onPressFunction: () => Navigator.pop(context, false),
+            ),
+            CustomButton(
+              text: "Sí",
+              isLoading: false,
+              primary: true,
+              onPressFunction: () => Navigator.pop(context, true),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      AppLogger.info(
+        "Confirmada inserción de reserva de $idPista para el día $fecha de $horaInicio a $horaFin",
+        tag: "RESERVAS_ADMIN",
+      );
+
+      await ReservasService().insertReserva(idPista,fecha, horaInicio, horaFin, capacidadMaxima: capacidadMaxima);
+
+      AppLogger.info(
+        "Reserva de $idPista para el día $fecha de $horaInicio a $horaFin añadida correctamente",
+        tag: "RESERVAS_ADMIN",
+      );
+      setState(() {
+        _reservasFuture = ReservasService().getAllReservas();
+      });
+      if (!mounted) return;
+      Navigator.pop(context);
+    } else {
+      AppLogger.info(
+        "Cancelada inserción de reserva de $idPista para el día $fecha de $horaInicio a $horaFin",
         tag: "RESERVAS_ADMIN",
       );
     }

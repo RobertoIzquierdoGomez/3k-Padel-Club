@@ -54,4 +54,18 @@ class ReservasService {
       rethrow;
     }
   }
+
+  Future<void> insertReserva(String idPista, DateTime fecha, String horaInicio, String horaFin, {int? capacidadMaxima}) async {
+    AppLogger.info("Insertando reserva con $idPista para el día $fecha de $horaInicio a $horaFin", tag: "RESERVA_SERVICE");
+    await _db
+      .from('reservas')
+      .insert({
+        'id_pista': idPista,
+        'fecha': fecha.toIso8601String(),
+        'hora_inicio': horaInicio,
+        'hora_fin': horaFin,
+        if(capacidadMaxima != null) 'capacidad_maxima': capacidadMaxima
+      });
+
+  }
 }

@@ -57,7 +57,7 @@ class ReservaAdminCard extends StatelessWidget {
             const CircleAvatar(
               radius: 22,
               backgroundColor: Color.fromARGB(255, 217, 221, 63),
-              child: Icon(Icons.person, color: Colors.black),
+              child: Icon(Icons.calendar_month, color: Colors.black),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -140,7 +140,7 @@ class ReservaAdminCard extends StatelessWidget {
         const CircleAvatar(
           radius: 22,
           backgroundColor: Color.fromARGB(255, 217, 221, 63),
-          child: Icon(Icons.person, color: Colors.black),
+          child: Icon(Icons.calendar_month, color: Colors.black),
         ),
         const SizedBox(width: 16),
         Expanded(

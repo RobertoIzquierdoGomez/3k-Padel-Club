@@ -66,7 +66,7 @@ class PistaService {
       await _db.from('pistas').insert({'nombre': nombre, 'estado': estado});
 
       AppLogger.info(
-        "Pista $nombre isnertada correctamente",
+        "Pista $nombre insertada correctamente",
         tag: "PISTA_SERVICE",
       );
     } catch (e) {

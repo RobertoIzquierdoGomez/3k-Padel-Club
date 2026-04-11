@@ -80,7 +80,7 @@ class _InsertPistaState extends State<InsertPista> {
                   },
                 ),
                 CustomButton(
-                  text: "Editar",
+                  text: "Añadir pista",
                   isLoading: false,
                   primary: true,
                   onPressFunction: () {
