@@ -83,29 +83,23 @@ class ReservasModel {
     return DateFormat('dd/MM/yyyy').format(fecha);
   }
 
-  String get horaInicioFormateada {
-    final partes = horaInicio.split(':');
+  String _formatearHora(String hora) {
+    if (hora.isEmpty) return "";
+
+    final partes = hora.split(':');
+    if (partes.length < 2) return hora;
+
     final dateTime = DateTime(
       0,
       1,
       1,
-      int.parse(partes[0]),
-      int.parse(partes[1]),
+      int.tryParse(partes[0]) ?? 0,
+      int.tryParse(partes[1]) ?? 0,
     );
 
     return DateFormat('HH:mm').format(dateTime);
   }
 
-  String get horaFinFormateada {
-    final partes = horaFin.split(':');
-    final dateTime = DateTime(
-      0,
-      1,
-      1,
-      int.parse(partes[0]),
-      int.parse(partes[1]),
-    );
-
-    return DateFormat('HH:mm').format(dateTime);
-  }
+  String get horaInicioFormateada => _formatearHora(horaInicio);
+  String get horaFinFormateada => _formatearHora(horaFin);
 }

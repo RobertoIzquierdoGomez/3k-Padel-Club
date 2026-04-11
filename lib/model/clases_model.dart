@@ -8,7 +8,8 @@ class ClasesModel {
   final String horaFin;
   final bool estadoClase;
   final List<UserModel> usuarios;
-  static const diasSemana = {
+
+  static const Map<int, String> diasSemana = {
     1: 'Lunes',
     2: 'Martes',
     3: 'Miércoles',
@@ -32,8 +33,9 @@ class ClasesModel {
 
     final str = hora.toString().trim();
 
-    if (str.length >= 5) {
-      return str.substring(0, 5);
+    final partes = str.split(':');
+    if (partes.length >= 2) {
+      return '${partes[0].padLeft(2, '0')}:${partes[1].padLeft(2, '0')}';
     }
 
     return str;
@@ -42,9 +44,7 @@ class ClasesModel {
   factory ClasesModel.fromJson(Map<String, dynamic> json) {
     return ClasesModel(
       idClase: (json['id_clase'] as String?) ?? "",
-      diaSemana: json['dia_semana'] is int
-          ? json['dia_semana']
-          : int.parse(json['dia_semana'].toString()),
+      diaSemana: json['dia_semana'] ?? 0,
       horaInicio: _parseHora(json['hora_inicio']),
       horaFin: _parseHora(json['hora_fin']),
       estadoClase: json['estado_clase'] ?? true,
@@ -65,13 +65,17 @@ class ClasesModel {
   }
 
   String _formatearHora(String hora) {
+    if (hora.isEmpty) return "";
+
     final partes = hora.split(':');
+    if (partes.length < 2) return hora;
+
     final dateTime = DateTime(
       0,
       1,
       1,
-      int.parse(partes[0]),
-      int.parse(partes[1]),
+      int.tryParse(partes[0]) ?? 0,
+      int.tryParse(partes[1]) ?? 0,
     );
 
     return DateFormat('HH:mm').format(dateTime);
@@ -80,7 +84,5 @@ class ClasesModel {
   String get horaInicioFormateada => _formatearHora(horaInicio);
   String get horaFinFormateada => _formatearHora(horaFin);
 
-  String get diaSemanaNombre {
-    return diasSemana[diaSemana] ?? '';
-  }
+  String get diaSemanaNombre => diasSemana[diaSemana] ?? '';
 }
