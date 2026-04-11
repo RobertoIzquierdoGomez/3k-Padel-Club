@@ -21,7 +21,10 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
   @override
   void initState() {
     super.initState();
-    AppLogger.info("Cargando pantalla de gestión de usuarios", tag: "USERS_ADMIN");
+    AppLogger.info(
+      "Cargando pantalla de gestión de usuarios",
+      tag: "USERS_ADMIN",
+    );
     _usersFuture = UserService().getAllUsers();
   }
 
@@ -43,7 +46,10 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
 
             // Error
             if (snapshot.hasError) {
-              AppLogger.error("Error cargando usuarios: ${snapshot.error}", tag: "USERS_ADMIN");
+              AppLogger.error(
+                "Error cargando usuarios: ${snapshot.error}",
+                tag: "USERS_ADMIN",
+              );
               return Center(child: Text(snapshot.error.toString()));
             }
 
@@ -55,7 +61,10 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
               return const Center(child: Text("No hay usuarios"));
             }
 
-            AppLogger.info("Usuarios cargados correctamente: ${usuarios.length}", tag: "USERS_ADMIN");
+            AppLogger.info(
+              "Usuarios cargados correctamente: ${usuarios.length}",
+              tag: "USERS_ADMIN",
+            );
 
             return ListView.builder(
               itemCount: usuarios.length,
@@ -69,7 +78,10 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
                     usuario.apellidos,
                   ),
                   onEditing: () {
-                    AppLogger.info("Editando usuario ${usuario.idUsuario}", tag: "USERS_ADMIN");
+                    AppLogger.info(
+                      "Editando usuario ${usuario.idUsuario}",
+                      tag: "USERS_ADMIN",
+                    );
                     showDialog(
                       context: context,
                       builder: (_) => UserEdit(
@@ -92,7 +104,10 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
     String nombre,
     String apellidos,
   ) async {
-    AppLogger.info("Intento de desactivar usuario $id ($apellidos, $nombre)", tag: "USERS_ADMIN");
+    AppLogger.info(
+      "Intento de desactivar usuario $id ($apellidos, $nombre)",
+      tag: "USERS_ADMIN",
+    );
 
     final confirm = await showDialog<bool>(
       context: context,
@@ -121,20 +136,32 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
     );
 
     if (confirm == true) {
-      AppLogger.info("Confirmada desactivación de usuario $id", tag: "USERS_ADMIN");
+      AppLogger.info(
+        "Confirmada desactivación de usuario $id",
+        tag: "USERS_ADMIN",
+      );
       await UserService().disableUser(id);
-      AppLogger.info("Usuario $id desactivado correctamente", tag: "USERS_ADMIN");
+      AppLogger.info(
+        "Usuario $id desactivado correctamente",
+        tag: "USERS_ADMIN",
+      );
 
       setState(() {
         _usersFuture = UserService().getAllUsers();
       });
     } else {
-      AppLogger.info("Cancelada desactivación de usuario $id", tag: "USERS_ADMIN");
+      AppLogger.info(
+        "Cancelada desactivación de usuario $id",
+        tag: "USERS_ADMIN",
+      );
     }
   }
 
-  Future<void> _confirmEditUser(UserModel user) async {
-    AppLogger.info("Intento de editar usuario ${user.idUsuario}", tag: "USERS_ADMIN");
+  Future<String?> _confirmEditUser(UserModel user) async {
+    AppLogger.info(
+      "Intento de editar usuario ${user.idUsuario}",
+      tag: "USERS_ADMIN",
+    );
 
     final confirm = await showDialog<bool>(
       context: context,
@@ -161,25 +188,45 @@ class _GestionUsuariosScreenState extends State<GestionUsuariosScreen> {
     );
 
     if (confirm == true) {
-      AppLogger.info("Confirmada edición de usuario ${user.idUsuario}", tag: "USERS_ADMIN");
-
-      await UserService().updateUserByAdmin(
-        user.idUsuario,
-        user.nombre,
-        user.apellidos,
-        user.nivel,
-        user.tipoMiembro,
+      AppLogger.info(
+        "Confirmada edición de usuario ${user.idUsuario}",
+        tag: "USERS_ADMIN",
       );
 
-      AppLogger.info("Usuario ${user.idUsuario} actualizado correctamente", tag: "USERS_ADMIN");
+      try {
+        await UserService().updateUserByAdmin(
+          user.idUsuario,
+          user.nombre,
+          user.apellidos,
+          user.nivel,
+          user.tipoMiembro,
+        );
 
-      setState(() {
-        _usersFuture = UserService().getAllUsers();
-      });
-      if(!mounted) return;
-      Navigator.pop(context); 
+        AppLogger.info(
+          "Usuario ${user.idUsuario} actualizado correctamente",
+          tag: "USERS_ADMIN",
+        );
+
+        setState(() {
+          _usersFuture = UserService().getAllUsers();
+        });
+
+        if (!mounted) return null;
+        Navigator.pop(context);
+
+        return null;
+      } catch (e) {
+        AppLogger.error("Error editando usuario: $e", tag: "USERS_ADMIN");
+
+        return e.toString();
+      }
     } else {
-      AppLogger.info("Cancelada edición de usuario ${user.idUsuario}", tag: "USERS_ADMIN");
+      AppLogger.info(
+        "Cancelada edición de usuario ${user.idUsuario}",
+        tag: "USERS_ADMIN",
+      );
+
+      return null;
     }
   }
 }

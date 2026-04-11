@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 class UserEdit extends StatefulWidget {
   final UserModel user;
-  final Function(UserModel) onEdit;
+  final Future<String?> Function(UserModel) onEdit;
   const UserEdit({super.key, required this.user, required this.onEdit});
 
   @override
@@ -111,11 +111,15 @@ class _UserEditState extends State<UserEdit> {
                   text: "Editar",
                   isLoading: false,
                   primary: true,
-                  onPressFunction: () {
+                  onPressFunction: () async {
                     AppLogger.info(
                       "Intento de edición de usuario ${widget.user.idUsuario}",
                       tag: "USERS_ADMIN",
                     );
+
+                    setState(() {
+                      errorMessage = null;
+                    });
 
                     if (!_userForm.currentState!.validate()) {
                       AppLogger.warning(
@@ -145,7 +149,7 @@ class _UserEditState extends State<UserEdit> {
                       tipoMiembro: tipoMiembro!,
                       rol: widget.user.rol,
                       perfilCompleto: widget.user.tipoMiembro,
-                      activo: widget.user.activo
+                      activo: widget.user.activo,
                     );
 
                     AppLogger.info(
@@ -153,7 +157,13 @@ class _UserEditState extends State<UserEdit> {
                       tag: "USERS_ADMIN",
                     );
 
-                    widget.onEdit(updatedUser);
+                    final error = await widget.onEdit(updatedUser);
+
+                    if (error != null) {
+                      setState(() {
+                        errorMessage = error;
+                      });
+                    }
                   },
                 ),
               ],
