@@ -64,6 +64,17 @@ class ClasesModel {
     };
   }
 
+  double get nivelPromedio {
+    if (usuarios.isEmpty) return 0.0;
+
+    final suma = usuarios.fold(0.0, (acc, user) => acc + user.nivel);
+    return (suma / usuarios.length);
+  }
+
+  String get nivelPromedioTexto {
+    return nivelPromedio.toStringAsFixed(1);
+  }
+
   String _formatearHora(String hora) {
     if (hora.isEmpty) return "";
 
