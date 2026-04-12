@@ -96,18 +96,10 @@ class _GestionClasesAdminScreenState extends State<GestionClasesAdminScreen> {
                     if (resultado == null) return;
                     final seleccionados = Set<String>.from(resultado);
 
-                    final originales = clase.usuarios
-                        .map((u) => u.idUsuario)
-                        .toSet();
-
-                    final usuariosAAgregar = seleccionados.difference(
-                      originales,
-                    );
-                    final usuariosAEliminar = originales.difference(
-                      seleccionados,
-                    );
-
-                    if (usuariosAAgregar.isEmpty && usuariosAEliminar.isEmpty) {
+                    if (seleccionados.length == clase.usuarios.length &&
+                        seleccionados.containsAll(
+                          clase.usuarios.map((u) => u.idUsuario),
+                        )) {
                       AppLogger.info(
                         "Sin cambios en usuarios",
                         tag: "CLASES_ADMIN",
@@ -115,16 +107,36 @@ class _GestionClasesAdminScreenState extends State<GestionClasesAdminScreen> {
                       return;
                     }
 
-                    await Future.wait([
-                      ...usuariosAEliminar.map(
-                        (idUsuario) => AsignacionClaseService()
-                            .deleteAsignacion(clase.idClase, idUsuario),
-                      ),
-                      ...usuariosAAgregar.map(
-                        (idUsuario) => AsignacionClaseService()
-                            .insertAsignacion(clase.idClase, idUsuario),
-                      ),
-                    ]);
+                    try {
+                      await Supabase.instance.client.rpc(
+                        'sync_usuarios_clase',
+                        params: {
+                          'p_id_clase': clase.idClase,
+                          'p_usuarios': seleccionados.toList(),
+                        },
+                      );
+
+                      setState(() {
+                        _clasesFuture = ClasesService().getAllClases();
+                      });
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Usuarios actualizados correctamente"),
+                        ),
+                      );
+                    } catch (e) {
+                      AppLogger.error(
+                        "Error sincronizando usuarios: $e",
+                        tag: "CLASES_ADMIN",
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Error al actualizar usuarios"),
+                        ),
+                      );
+                    }
 
                     setState(() {
                       _clasesFuture = ClasesService().getAllClases();
