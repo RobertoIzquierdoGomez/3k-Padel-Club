@@ -19,6 +19,7 @@ class AsignarUsuariosSheet extends StatefulWidget {
 class _AsignarUsuariosSheetState extends State<AsignarUsuariosSheet> {
   static const int maxUsuarios = 4;
   late Set<String> usuariosSeleccionados;
+  String busqueda = "";
 
   @override
   void initState() {
@@ -31,6 +32,15 @@ class _AsignarUsuariosSheetState extends State<AsignarUsuariosSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final usuariosFiltrados = widget.usuarios.where((usuario) {
+      if (busqueda.isEmpty) return true;
+
+      final textoUsuario = "${usuario.nombre} ${usuario.apellidos}"
+          .toLowerCase();
+
+      return textoUsuario.contains(busqueda.toLowerCase());
+    }).toList();
+
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -38,15 +48,27 @@ class _AsignarUsuariosSheetState extends State<AsignarUsuariosSheet> {
           crossAxisAlignment: CrossAxisAlignment.center,
           spacing: 20,
           children: [
+            TextField(
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                hintText: "Buscar usuario...",
+              ),
+              onChanged: (value) {
+                setState(() {
+                  busqueda = value;
+                });
+              },
+            ),
             Text(
               "Máximo $maxUsuarios usuarios por clase",
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
+
             Expanded(
               child: ListView.builder(
-                itemCount: widget.usuarios.length,
+                itemCount: usuariosFiltrados.length,
                 itemBuilder: (context, i) {
-                  final usuario = widget.usuarios[i];
+                  final usuario = usuariosFiltrados[i];
                   final estaSeleccionado = usuariosSeleccionados.contains(
                     usuario.idUsuario,
                   );
@@ -67,7 +89,7 @@ class _AsignarUsuariosSheetState extends State<AsignarUsuariosSheet> {
                             });
                           }
                         : null,
-                    title: Text("${usuario.nombre} ${usuario.apellidos}"),
+                    title: Text("${usuario.apellidos}, ${usuario.nombre}"),
                   );
                 },
               ),

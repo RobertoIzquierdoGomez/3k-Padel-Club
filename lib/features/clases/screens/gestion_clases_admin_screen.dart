@@ -108,12 +108,9 @@ class _GestionClasesAdminScreenState extends State<GestionClasesAdminScreen> {
                     }
 
                     try {
-                      await Supabase.instance.client.rpc(
-                        'sync_usuarios_clase',
-                        params: {
-                          'p_id_clase': clase.idClase,
-                          'p_usuarios': seleccionados.toList(),
-                        },
+                      await AsignacionClaseService().syncUsuariosClase(
+                        clase.idClase,
+                        seleccionados.toList(),
                       );
 
                       setState(() {
