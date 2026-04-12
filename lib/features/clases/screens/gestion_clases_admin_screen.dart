@@ -152,7 +152,12 @@ class _GestionClasesAdminScreenState extends State<GestionClasesAdminScreen> {
                       ),
                     );
                   },
-                  onDelete: () {},
+                  onDelete: () => _confirmDeleteClase(
+                    clase.idClase,
+                    clase.diaSemanaNombre,
+                    clase.horaInicioFormateada,
+                    clase.horaFinFormateada,
+                  ),
                 );
               },
             );
@@ -308,6 +313,66 @@ class _GestionClasesAdminScreenState extends State<GestionClasesAdminScreen> {
         tag: "CLASES_ADMIN",
       );
       return null;
+    }
+  }
+
+  Future<void> _confirmDeleteClase(
+    String idClase,
+    String diaSemana,
+    String horaInicio,
+    String horaFin,
+  ) async {
+    AppLogger.info(
+      "Intento de eliminar clase $idClase del día $diaSemana de $horaInicio a $horaFin.",
+      tag: "CLASES_ADMIN",
+    );
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Eliminar reserva"),
+          content: Text(
+            "¿Seguro que quieres eliminar la clase del día $diaSemana de $horaInicio a $horaFin?",
+          ),
+          actions: [
+            CustomButton(
+              text: "Cancelar",
+              isLoading: false,
+              primary: true,
+              onPressFunction: () => Navigator.pop(context, false),
+            ),
+            CustomButton(
+              text: "Eliminar",
+              isLoading: false,
+              primary: false,
+              onPressFunction: () => Navigator.pop(context, true),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      AppLogger.info(
+        "Confirmada eliminación de clase $idClase",
+        tag: "CLASES_ADMIN",
+      );
+
+      await ClasesService().deleteCalse(idClase);
+
+      AppLogger.info(
+        "Reserva $idClase eliminada correctamente",
+        tag: "CLASES_ADMIN",
+      );
+
+      setState(() {
+        _clasesFuture = ClasesService().getAllClases();
+      });
+    } else {
+      AppLogger.info(
+        "Cancelada eliminación de clase $idClase",
+        tag: "CLASES_ADMIN",
+      );
     }
   }
 }

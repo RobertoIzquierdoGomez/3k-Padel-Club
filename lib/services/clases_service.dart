@@ -86,4 +86,21 @@ class ClasesService {
       rethrow;
     }
   }
+
+  Future<void> deleteCalse(String idClase) async {
+    try {
+      AppLogger.info("Eliminando clase $idClase", tag: "CLASES_SERVICE");
+      await _db.from('clases').delete().eq('id_clase', idClase);
+      AppLogger.info(
+        "Clase $idClase eliminada correctamente",
+        tag: "CLASES_SERVICE",
+      );
+    } catch (e) {
+      AppLogger.error(
+        "Error eliminando clase $idClase: $e",
+        tag: "CLASES_SERVICE",
+      );
+      rethrow;
+    }
+  }
 }
