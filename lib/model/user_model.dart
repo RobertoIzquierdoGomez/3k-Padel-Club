@@ -35,7 +35,7 @@ class UserModel {
       'nivel': nivel,
       'tipo_miembro': tipoMiembro,
       'rol': rol,
-      'cambiar_password': perfilCompleto,
+      'perfil_completo': perfilCompleto,
       'activo': activo
     };
   }
