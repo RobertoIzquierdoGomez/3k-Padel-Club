@@ -1,7 +1,7 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/reservas/widget/insert_reserva_admin.dart';
-import 'package:app_3k_padel/features/reservas/widget/reserva_admin_card.dart';
-import 'package:app_3k_padel/features/reservas/widget/reserva_edit.dart';
+import 'package:app_3k_padel/features/reservas/widget/reserva_card_admin.dart';
+import 'package:app_3k_padel/features/reservas/widget/reserva_edit_admin.dart';
 import 'package:app_3k_padel/model/pista_model.dart';
 import 'package:app_3k_padel/model/reservas_model.dart';
 import 'package:app_3k_padel/services/participacion_reserva_service.dart'; // 🔥 NUEVO
@@ -104,7 +104,6 @@ class _GestionReservasAdminScreenState
                         onEdit: (updatedReserva) =>
                             _confirmEditReserva(updatedReserva),
 
-                        // 🔥 NUEVO (SIN TOCAR LO ANTIGUO)
                         onDeleteParticipacion: _deleteParticipacion,
                       ),
                     );

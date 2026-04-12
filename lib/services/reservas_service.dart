@@ -116,7 +116,7 @@ class ReservasService {
         tag: "RESERVA_SERVICE",
       );
     } catch (e) {
-      AppLogger.error("Error actualizando reserva $id", tag: "RESERVA_SERVICE");
+      AppLogger.error("Error actualizando reserva $id: $e", tag: "RESERVA_SERVICE");
       rethrow;
     }
   }

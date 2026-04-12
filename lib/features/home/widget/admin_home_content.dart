@@ -1,4 +1,5 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
+import 'package:app_3k_padel/features/clases/screens/gestion_clases_admin_screen.dart';
 import 'package:app_3k_padel/features/gestion_pistas/screens/gestion_pistas_screen.dart';
 import 'package:app_3k_padel/features/gestion_usuarios/screens/gestion_usuarios_screen.dart';
 import 'package:app_3k_padel/features/home/widget/clickable_card.dart';
@@ -59,6 +60,12 @@ class AdminHomeContent extends StatelessWidget {
                   AppLogger.info(
                     "Acceso a Gestión de clases",
                     tag: "NAV_ADMIN",
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GestionClasesAdminScreen(),
+                    ),
                   );
                 },
               ),

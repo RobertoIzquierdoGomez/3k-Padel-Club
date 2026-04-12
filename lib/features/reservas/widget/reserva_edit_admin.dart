@@ -309,8 +309,7 @@ class _ReservaEditState extends State<ReservaEdit> {
                           ? capacidadMaxima ?? widget.reserva.capacidadMaxima
                           : widget.reserva.capacidadMaxima,
                     );
-
-                    // 🔥 CLAVE
+                    
                     final error = await widget.onEdit(updatedReserva);
 
                     if (error != null) {

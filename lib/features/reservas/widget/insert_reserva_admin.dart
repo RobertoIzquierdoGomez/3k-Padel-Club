@@ -259,20 +259,6 @@ class _InsertReservaAdminState extends State<InsertReservaAdmin> {
                       return;
                     }
 
-                    if (horaInicio != null && horaFin != null) {
-                      if (_toMinutes(horaInicio!) >= _toMinutes(horaFin!)) {
-                        AppLogger.warning(
-                          "Hora fin menor o igual que hora inicio $selectedFecha para $selectedPistaId de $horaInicio a $horaFin",
-                          tag: "RESERVAS_ADMIN",
-                        );
-                        setState(() {
-                          errorMessage =
-                              "La hora final no puede ser anterior que la hora inicial";
-                        });
-                        return;
-                      }
-                    }
-
                     AppLogger.info(
                       "Datos validados correctamente para reserva $selectedFecha para $selectedPistaId de $horaInicio a $horaFin",
                       tag: "RESERVAS_ADMIN",

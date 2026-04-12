@@ -57,7 +57,33 @@ class ClasesService {
     }
   }
 
-  Future<void> updateClase() async {
+  Future<void> updateClase(
+    String idClase,
+    int diaSemana,
+    String horaInicio,
+    String horaFin,
+    bool estadoClase
+  ) async {
+    try {
+      AppLogger.info("Actualizando clase $idClase", tag: "CLASES_SERVICE");
 
+      await _db
+          .from('clases')
+          .update({
+            'dia_semana': diaSemana,
+            'hora_inicio': horaInicio,
+            'hora_fin': horaFin,
+            'estado_clase': estadoClase,
+          })
+          .eq('id_clase', idClase);
+
+      AppLogger.info(
+        "Clase actualizada correctamente para $idClase",
+        tag: "CLASES_SERVICE",
+      );
+    } catch (e) {
+      AppLogger.error("Error actualizando clase $idClase: $e", tag: "CLASES_SERVICE");
+      rethrow;
+    }
   }
 }
