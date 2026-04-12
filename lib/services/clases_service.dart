@@ -16,7 +16,13 @@ class ClasesService {
             usuario:usuarios(
               id_usuario,
               nombre,
-              apellidos
+              apellidos,
+              correo,
+              nivel,
+              tipo_miembro,
+              rol,
+              perfil_completo,
+              activo
             )
           )
         ''')
@@ -29,5 +35,29 @@ class ClasesService {
       AppLogger.error("Error obteniendo clases: $e", tag: "CLASES_SERVICE");
       rethrow;
     }
+  }
+
+  Future<void> insertClase(int diaSemana, String horaInicio, String horaFin) async {
+    try {
+      AppLogger.info(
+        "Insertando clase para día $diaSemana de $horaInicio a $horaFin",
+        tag: "CLASE_SERVICE",
+      );
+      await _db.from('clases').insert({
+        'dia_semana': diaSemana,
+        'hora_inicio': horaInicio,
+        'hora_fin': horaFin,
+      });
+    } catch (e) {
+      AppLogger.error(
+        "Error insertando clase para día $diaSemana de $horaInicio a $horaFin: $e",
+        tag: "CLASE_SERVICE",
+      );
+      rethrow;
+    }
+  }
+
+  Future<void> updateClase() async {
+
   }
 }
