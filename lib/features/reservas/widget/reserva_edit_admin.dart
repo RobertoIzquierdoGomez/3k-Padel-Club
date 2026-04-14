@@ -31,6 +31,7 @@ class _ReservaEditState extends State<ReservaEdit> {
   String? horaFin;
   bool editarCapacidad = false;
   int? capacidadMaxima;
+  bool? estadoReserva;
   bool mostrarUsuarios = false;
   String? errorMessage;
   late TextEditingController controllerFecha;
@@ -82,6 +83,7 @@ class _ReservaEditState extends State<ReservaEdit> {
                 "${selectedFecha!.year}"
           : "",
     );
+    estadoReserva = widget.reserva.estado;
   }
 
   @override
@@ -239,6 +241,15 @@ class _ReservaEditState extends State<ReservaEdit> {
                   return null;
                 },
               ),
+            SwitchListTile(
+              title: const Text("Activa"),
+              value: estadoReserva ?? false,
+              onChanged: (value) {
+                setState(() {
+                  estadoReserva = value;
+                });
+              },
+            ),
             CustomButton(
               text: "Ver usuarios",
               isLoading: false,
@@ -303,8 +314,8 @@ class _ReservaEditState extends State<ReservaEdit> {
                       fecha: selectedFecha!,
                       horaInicio: horaInicio!,
                       horaFin: horaFin!,
-                      estado: widget.reserva.estado,
                       usuarios: widget.reserva.usuarios,
+                      estado: estadoReserva!,
                       capacidadMaxima: editarCapacidad
                           ? capacidadMaxima ?? widget.reserva.capacidadMaxima
                           : widget.reserva.capacidadMaxima,

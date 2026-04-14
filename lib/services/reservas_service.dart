@@ -94,7 +94,8 @@ class ReservasService {
     String idPista,
     DateTime fecha,
     String horaInicio,
-    String horaFin, {
+    String horaFin, 
+    bool estado, {
     int? capacidadMaxima,
   }) async {
     try {
@@ -107,6 +108,7 @@ class ReservasService {
             'fecha': fecha.toIso8601String(),
             'hora_inicio': horaInicio,
             'hora_fin': horaFin,
+            'estado': estado,
             if (capacidadMaxima != null) 'capacidad_maxima': capacidadMaxima,
           })
           .eq('id_reserva', id);

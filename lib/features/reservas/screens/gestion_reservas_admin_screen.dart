@@ -340,6 +340,7 @@ class _GestionReservasAdminScreenState
           reserva.fecha,
           reserva.horaInicio,
           reserva.horaFin,
+          reserva.estado,
           capacidadMaxima: reserva.capacidadMaxima,
         );
 
