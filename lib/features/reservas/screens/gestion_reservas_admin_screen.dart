@@ -33,7 +33,7 @@ class _GestionReservasAdminScreenState
       "Cargando pantalla de gestión de reservas",
       tag: "RESERVAS_ADMIN",
     );
-    _reservasFuture = ReservasService().getAllReservas();
+    _reservasFuture = ReservasService().getAllReservasAdmin();
     _pistasFuture = PistaService().getAllPistasActivas();
   }
 
@@ -157,7 +157,7 @@ class _GestionReservasAdminScreenState
     );
 
     setState(() {
-      _reservasFuture = ReservasService().getAllReservas();
+      _reservasFuture = ReservasService().getAllReservasAdmin();
     });
   }
 
@@ -213,7 +213,7 @@ class _GestionReservasAdminScreenState
       );
 
       setState(() {
-        _reservasFuture = ReservasService().getAllReservas();
+        _reservasFuture = ReservasService().getAllReservasAdmin();
       });
     } else {
       AppLogger.info(
@@ -277,7 +277,7 @@ class _GestionReservasAdminScreenState
         AppLogger.info("Reserva añadida correctamente", tag: "RESERVAS_ADMIN");
 
         setState(() {
-          _reservasFuture = ReservasService().getAllReservas();
+          _reservasFuture = ReservasService().getAllReservasAdmin();
         });
 
         if (!mounted) return null;
@@ -350,7 +350,7 @@ class _GestionReservasAdminScreenState
         );
 
         setState(() {
-          _reservasFuture = ReservasService().getAllReservas();
+          _reservasFuture = ReservasService().getAllReservasAdmin();
         });
 
         if (!mounted) return null;

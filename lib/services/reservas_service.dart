@@ -5,7 +5,7 @@ import 'package:app_3k_padel/model/reservas_model.dart';
 class ReservasService {
   final _db = SupabaseConfig.client;
 
-  Future<List<ReservasModel>> getAllReservas() async {
+  Future<List<ReservasModel>> getAllReservasAdmin() async {
     try {
       AppLogger.info("Obteniendo lista de reservas", tag: "RESERVA_SERVICE");
       final data = await _db
