@@ -44,6 +44,46 @@ class ReservasService {
     }
   }
 
+  Future<List<ReservasModel>> getAllReservasUser() async {
+    try {
+      AppLogger.info("Obteniendo lista de reservas por usuario", tag: "RESERVA_SERVICE");
+      final data = await _db
+          .from('reservas')
+          .select('''
+        *,
+        pistas(
+          nombre
+        ),
+        participacion_reserva (
+          usuario:usuarios(
+            id_usuario,
+            nombre,
+            apellidos,
+            correo,
+            nivel,
+            tipo_miembro,
+            rol,
+            perfil_completo,
+            activo
+          )  
+        )
+      ''')
+          .eq('estado', true)
+          .order('fecha', ascending: true)
+          .order('hora_inicio', ascending: true);
+
+      AppLogger.info(
+        "Reservas obtenidas por usuario: ${data.length}",
+        tag: "RESERVA_SERVICE",
+      );
+
+      return data.map((e) => ReservasModel.fromJson(e)).toList();
+    } catch (e) {
+      AppLogger.error("Error obteniendo reservas por usuario: $e", tag: "RESERVA_SERVICE");
+      rethrow;
+    }
+  }
+
   Future<void> deleteReserva(String id) async {
     try {
       AppLogger.info("Eliminando reserva $id", tag: "RESERVA_SERVICE");
