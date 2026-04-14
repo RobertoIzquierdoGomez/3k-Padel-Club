@@ -23,6 +23,24 @@ class PistaService {
     }
   }
 
+  Future<List<PistaModel>> getAllPistasActivas() async {
+    try {
+      AppLogger.info("Obteniendo lista de pistas", tag: "PISTA_SERVICE");
+      final data = await _db
+          .from('pistas')
+          .select()
+          .eq('estado', true)
+          .order('nombre', ascending: true);
+
+      AppLogger.info("Pistas obtenidas: ${data.length}", tag: "PISTA_SERVICE");
+
+      return data.map((e) => PistaModel.fromJson(e)).toList();
+    } catch (e) {
+      AppLogger.error("Error obteniendo pistas: $e", tag: "PISTA_SERVICE");
+      rethrow;
+    }
+  }
+
   //Eliminar pista
   Future<void> deletePista(String id) async {
     try {
