@@ -1,6 +1,7 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/home/widget/clickable_card.dart';
 import 'package:app_3k_padel/features/perfil/screens/profile_screen.dart';
+import 'package:app_3k_padel/features/reservas/screens/reservas_user_screen.dart';
 import 'package:flutter/material.dart';
 
 class UserHomeContent extends StatelessWidget {
@@ -25,6 +26,12 @@ class UserHomeContent extends StatelessWidget {
                     "Acceso a Reservas disponibles",
                     tag: "NAV_USER",
                   );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReservasUserScreen(),
+                    ),
+                  );
                 },
               ),
               ClickableCard(
@@ -41,10 +48,7 @@ class UserHomeContent extends StatelessWidget {
                 text: "Ver mis clases",
                 imagePath: "assets/backgrounds/fondo_gestion_clases.png",
                 onTap: () {
-                  AppLogger.info(
-                    "Acceso a Ver mis clases",
-                    tag: "NAV_USER",
-                  );
+                  AppLogger.info("Acceso a Ver mis clases", tag: "NAV_USER");
                 },
               ),
               ClickableCard(

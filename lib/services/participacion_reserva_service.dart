@@ -36,4 +36,27 @@ class ParticipacionReservaService {
       rethrow;
     }
   }
+
+  Future<void> insertParticipacionUsuario(String idReserva, String idUsuario) async{
+    try {
+      AppLogger.info(
+        "Insertando participación de reserva $idReserva por el usuario $idUsuario",
+        tag: "PARTICIPACION_RESERVA_SERVICE",
+      );
+      await _db
+          .from('participacion_reserva')
+          .insert({
+            'id_reserva': idReserva,
+            'id_usuario': idUsuario
+          });
+
+    } catch (e) {
+      AppLogger.error(
+        "Error insertando participación $idReserva por el usuario $idUsuario: $e",
+        tag: "PARTICIPACION_RESERVA_SERVICE",
+      );
+      rethrow;
+    }
+  }
+
 }
