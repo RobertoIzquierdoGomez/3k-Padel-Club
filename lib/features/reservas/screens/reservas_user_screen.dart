@@ -1,10 +1,8 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
-import 'package:app_3k_padel/features/reservas/widget/reserva_card_user.dart';
+import 'package:app_3k_padel/features/reservas/widget/reserva_disponible_card_user.dart';
 import 'package:app_3k_padel/main.dart';
-import 'package:app_3k_padel/model/pista_model.dart';
 import 'package:app_3k_padel/model/reservas_model.dart';
 import 'package:app_3k_padel/services/participacion_reserva_service.dart';
-import 'package:app_3k_padel/services/pista_service.dart';
 import 'package:app_3k_padel/services/reservas_service.dart';
 import 'package:app_3k_padel/widgets/custom_appbar.dart';
 import 'package:app_3k_padel/widgets/custom_background.dart';
@@ -20,14 +18,12 @@ class ReservasUserScreen extends StatefulWidget {
 
 class _ReservasUserScreenState extends State<ReservasUserScreen> {
   late Future<List<ReservasModel>> _reservasFuture;
-  late Future<List<PistaModel>> _pistasFuture;
 
   @override
   void initState() {
     super.initState();
     AppLogger.info("Cargando pantalla de reservas", tag: "RESERVAS_USER");
     _reservasFuture = ReservasService().getAllReservasUser();
-    _pistasFuture = PistaService().getAllPistasActivas();
   }
 
   @override
@@ -78,7 +74,7 @@ class _ReservasUserScreenState extends State<ReservasUserScreen> {
               itemCount: reservas.length,
               itemBuilder: (context, i) {
                 final reserva = reservas[i];
-                return ReservaCardUser(
+                return ReservaDisponibleCardUser(
                   reserva: reserva,
                   onADding: () => _confirmAddingParticipacion(
                     reserva.idReserva,
