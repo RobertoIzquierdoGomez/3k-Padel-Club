@@ -7,7 +7,7 @@ class ReservasService {
 
   Future<List<ReservasModel>> getAllReservasAdmin() async {
     try {
-      AppLogger.info("Obteniendo lista de reservas", tag: "RESERVA_SERVICE");
+      AppLogger.info("Obteniendo lista de reservas por administrador", tag: "RESERVA_SERVICE");
       final data = await _db
           .from('reservas')
           .select('''
@@ -33,13 +33,13 @@ class ReservasService {
           .order('hora_inicio', ascending: true);
 
       AppLogger.info(
-        "Reservas obtenidas: ${data.length}",
+        "Reservas obtenidas por el administrador: ${data.length}",
         tag: "RESERVA_SERVICE",
       );
 
       return data.map((e) => ReservasModel.fromJson(e)).toList();
     } catch (e) {
-      AppLogger.error("Error obteniendo reservas: $e", tag: "RESERVA_SERVICE");
+      AppLogger.error("Error obteniendo reservas por el administrador: $e", tag: "RESERVA_SERVICE");
       rethrow;
     }
   }
