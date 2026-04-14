@@ -22,6 +22,7 @@ class ReservaAdminCard extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Card(
+          color: reserva.estado ? null : const Color.fromARGB(255, 233, 231, 231),
           margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           elevation: 3,
           shape: RoundedRectangleBorder(
@@ -99,6 +100,20 @@ class ReservaAdminCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 20),
                       CustomBadge(text: reserva.nivelPromedioTexto),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Text(
+                        "Estado: ",
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      const SizedBox(width: 20),
+                      CustomBadge(
+                        text: reserva.estado ? "Activa" : "Inactiva",
+                        activa: reserva.estado,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -192,6 +207,20 @@ class ReservaAdminCard extends StatelessWidget {
                   CustomBadge(text: reserva.nivelPromedioTexto),
                 ],
               ),
+              const SizedBox(height: 4),
+              Row(
+                    children: [
+                      Text(
+                        "Estado: ",
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      const SizedBox(width: 20),
+                      CustomBadge(
+                        text: reserva.estado ? "Activa" : "Inactiva",
+                        activa: reserva.estado,
+                      ),
+                    ],
+                  ),
             ],
           ),
         ),
