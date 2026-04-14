@@ -335,7 +335,7 @@ class _ReservaEditState extends State<ReservaEdit> {
           title: const Text("Usuarios en la reserva"),
           content: SizedBox(
             width: 400,
-            height: 300, // puedes ajustar
+            height: 300,
             child: widget.reserva.usuarios.isEmpty
                 ? const Center(child: Text("No hay usuarios"))
                 : ListView.builder(
@@ -419,6 +419,7 @@ class _ReservaEditState extends State<ReservaEdit> {
     if (confirm == true) {
       widget.onDeleteParticipacion(idReserva, idUsuario);
       if (!mounted) return;
+      Navigator.pop(context);
       Navigator.pop(context);
     }
   }

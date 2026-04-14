@@ -4,7 +4,7 @@ import 'package:app_3k_padel/features/reservas/widget/reserva_card_admin.dart';
 import 'package:app_3k_padel/features/reservas/widget/reserva_edit_admin.dart';
 import 'package:app_3k_padel/model/pista_model.dart';
 import 'package:app_3k_padel/model/reservas_model.dart';
-import 'package:app_3k_padel/services/participacion_reserva_service.dart'; // 🔥 NUEVO
+import 'package:app_3k_padel/services/participacion_reserva_service.dart';
 import 'package:app_3k_padel/services/pista_service.dart';
 import 'package:app_3k_padel/services/reservas_service.dart';
 import 'package:app_3k_padel/widgets/custom_appbar.dart';
@@ -34,7 +34,7 @@ class _GestionReservasAdminScreenState
       tag: "RESERVAS_ADMIN",
     );
     _reservasFuture = ReservasService().getAllReservas();
-    _pistasFuture = PistaService().getAllPistas();
+    _pistasFuture = PistaService().getAllPistasActivas();
   }
 
   @override

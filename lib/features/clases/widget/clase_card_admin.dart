@@ -24,6 +24,7 @@ class ClaseCardAdmin extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Card(
+          color: clase.estadoClase ? null : const Color.fromARGB(255, 233, 231, 231),
           margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           elevation: 3,
           shape: RoundedRectangleBorder(
@@ -201,6 +202,17 @@ class ClaseCardAdmin extends StatelessWidget {
                   ),
                   const SizedBox(width: 20),
                   CustomBadge(text: clase.nivelPromedioTexto),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Text(
+                    "Estado: ",
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  const SizedBox(width: 20),
+                  CustomBadge(text: clase.estadoClase ? "Activa" : "Suspendida", activa: clase.estadoClase,),
                 ],
               ),
             ],
