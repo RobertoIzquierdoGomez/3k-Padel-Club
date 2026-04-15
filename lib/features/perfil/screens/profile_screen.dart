@@ -1,5 +1,5 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
-import 'package:app_3k_padel/features/auth/screens/reset_password_Screen.dart';
+import 'package:app_3k_padel/features/auth/screens/reset_password_screen.dart';
 import 'package:app_3k_padel/features/perfil/widget/perfil_label_widget.dart';
 import 'package:app_3k_padel/services/user_service.dart';
 import 'package:app_3k_padel/widgets/custom_appbar.dart';
