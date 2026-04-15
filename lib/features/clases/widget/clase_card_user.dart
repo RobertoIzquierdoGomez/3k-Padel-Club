@@ -1,21 +1,13 @@
-import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/model/clases_model.dart';
 import 'package:app_3k_padel/widgets/custom_badge.dart';
-import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
-class ClaseCardAdmin extends StatelessWidget {
+class ClaseCardUser extends StatelessWidget {
   final ClasesModel clase;
-  final VoidCallback onEditing;
-  final VoidCallback onDelete;
-  final VoidCallback onManageUsers;
 
-  const ClaseCardAdmin({
+  const ClaseCardUser({
     super.key,
     required this.clase,
-    required this.onEditing,
-    required this.onDelete,
-    required this.onManageUsers,
   });
 
   @override
@@ -121,52 +113,6 @@ class ClaseCardAdmin extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: [
-                      CustomButton(
-                        text: "Usuarios",
-                        isLoading: false,
-                        primary: true,
-                        onPressFunction: () {
-                          AppLogger.info(
-                            "Pulsado gestionar usuarios clase ${clase.idClase}",
-                            tag: "CLASES_ADMIN",
-                          );
-                          onManageUsers();
-                        },
-                      ),
-                      const SizedBox(width: 10),
-                      CustomButton(
-                        text: "Editar",
-                        isLoading: false,
-                        primary: true,
-                        onPressFunction: () {
-                          AppLogger.info(
-                            "Pulsado editar clase ${clase.idClase}",
-                            tag: "CLASES_ADMIN",
-                          );
-                          onEditing();
-                        },
-                      ),
-                      const SizedBox(width: 10),
-                      CustomButton(
-                        text: "Eliminar",
-                        isLoading: false,
-                        primary: false,
-                        onPressFunction: () {
-                          AppLogger.info(
-                            "Pulsado eliminar clase ${clase.idClase}",
-                            tag: "CLASES_ADMIN",
-                          );
-                          onDelete();
-                        },
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
@@ -239,48 +185,6 @@ class ClaseCardAdmin extends StatelessWidget {
               ),
             ],
           ),
-        ),
-        Row(
-          children: [
-            CustomButton(
-              text: "Usuarios",
-              isLoading: false,
-              primary: true,
-              onPressFunction: () {
-                AppLogger.info(
-                  "Pulsado gestionar usuarios clase ${clase.idClase}",
-                  tag: "CLASES_ADMIN",
-                );
-                onManageUsers();
-              },
-            ),
-            const SizedBox(width: 10),
-            CustomButton(
-              text: "Editar",
-              isLoading: false,
-              primary: true,
-              onPressFunction: () {
-                AppLogger.info(
-                  "Pulsado editar clase ${clase.idClase}",
-                  tag: "CLASES_ADMIN",
-                );
-                onEditing();
-              },
-            ),
-            const SizedBox(width: 10),
-            CustomButton(
-              text: "Eliminar",
-              isLoading: false,
-              primary: false,
-              onPressFunction: () {
-                AppLogger.info(
-                  "Pulsado eliminar clase ${clase.idClase}",
-                  tag: "CLASES_ADMIN",
-                );
-                onDelete();
-              },
-            ),
-          ],
         ),
       ],
     );

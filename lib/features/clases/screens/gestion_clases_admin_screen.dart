@@ -33,7 +33,7 @@ class _GestionClasesAdminScreenState extends State<GestionClasesAdminScreen> {
       "Cargando pantalla de gestión de clases",
       tag: "CLASES_ADMIN",
     );
-    _clasesFuture = ClasesService().getAllClases();
+    _clasesFuture = ClasesService().getAllClasesAdmin();
     _usuariosFuture = UserService().getAllUsers();
   }
 
@@ -114,7 +114,7 @@ class _GestionClasesAdminScreenState extends State<GestionClasesAdminScreen> {
                       );
 
                       setState(() {
-                        _clasesFuture = ClasesService().getAllClases();
+                        _clasesFuture = ClasesService().getAllClasesAdmin();
                       });
 
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -136,7 +136,7 @@ class _GestionClasesAdminScreenState extends State<GestionClasesAdminScreen> {
                     }
 
                     setState(() {
-                      _clasesFuture = ClasesService().getAllClases();
+                      _clasesFuture = ClasesService().getAllClasesAdmin();
                     });
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -234,7 +234,7 @@ class _GestionClasesAdminScreenState extends State<GestionClasesAdminScreen> {
         AppLogger.info("Clase añadida correctamente", tag: "CLASES_ADMIN");
 
         setState(() {
-          _clasesFuture = ClasesService().getAllClases();
+          _clasesFuture = ClasesService().getAllClasesAdmin();
         });
 
         if (!mounted) return null;
@@ -302,7 +302,7 @@ class _GestionClasesAdminScreenState extends State<GestionClasesAdminScreen> {
         AppLogger.info("Clase actualizada correctamente", tag: "CLASES_ADMIN");
 
         setState(() {
-          _clasesFuture = ClasesService().getAllClases();
+          _clasesFuture = ClasesService().getAllClasesAdmin();
         });
 
         if (!mounted) return null;
@@ -375,7 +375,7 @@ class _GestionClasesAdminScreenState extends State<GestionClasesAdminScreen> {
       );
 
       setState(() {
-        _clasesFuture = ClasesService().getAllClases();
+        _clasesFuture = ClasesService().getAllClasesAdmin();
       });
     } else {
       AppLogger.info(
