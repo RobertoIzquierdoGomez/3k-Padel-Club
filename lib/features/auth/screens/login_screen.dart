@@ -14,7 +14,7 @@ class LoginScreen extends StatelessWidget {
         child: Column(
           children: [
             Image(
-                  image: AssetImage('assets/logo/3k_logo.PNG'),
+                  image: AssetImage('assets/logo/3k_logo_sin_fondo.PNG'),
                   width: 200,
                 ),
             LoginForm(),
