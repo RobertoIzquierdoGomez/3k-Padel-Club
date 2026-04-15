@@ -1,5 +1,5 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
-import 'package:app_3k_padel/features/reservas/widget/reserva_disponible_card_user.dart';
+import 'package:app_3k_padel/features/reservas/widget/reserva_activa_card_user.dart';
 import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/model/reservas_model.dart';
 import 'package:app_3k_padel/services/participacion_reserva_service.dart';
@@ -9,21 +9,21 @@ import 'package:app_3k_padel/widgets/custom_background.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
-class ReservasUserScreen extends StatefulWidget {
-  const ReservasUserScreen({super.key});
+class ReservasActivasUserScreen extends StatefulWidget {
+  const ReservasActivasUserScreen({super.key});
 
   @override
-  State<ReservasUserScreen> createState() => _ReservasUserScreenState();
+  State<ReservasActivasUserScreen> createState() => _ReservasActivasUserScreenState();
 }
 
-class _ReservasUserScreenState extends State<ReservasUserScreen> {
-  late Future<List<ReservasModel>> _reservasFuture;
+class _ReservasActivasUserScreenState extends State<ReservasActivasUserScreen> {
+  late Future<List<ReservasModel>> _reservasActivasFuture;
 
   @override
   void initState() {
     super.initState();
-    AppLogger.info("Cargando pantalla de reservas", tag: "RESERVAS_USER");
-    _reservasFuture = ReservasService().getAllReservasUser();
+    AppLogger.info("Cargando pantalla de reservas activas", tag: "RESERVAS_ACTIVAS_USER");
+    _reservasActivasFuture = ReservasService().getReservasActivasUsuario();
   }
 
   @override
@@ -32,15 +32,15 @@ class _ReservasUserScreenState extends State<ReservasUserScreen> {
       extendBodyBehindAppBar: true,
       appBar: CustomAppbar(),
       body: Fondo(
-        imagePath: "assets/backgrounds/fondo_reservas_disponibles.jpg",
+        imagePath: "assets/backgrounds/fondo_mis_reservas.jpg",
         child: FutureBuilder<List<ReservasModel>>(
-          future: _reservasFuture,
+          future: _reservasActivasFuture,
           builder: (context, snapshot) {
             // Cargando
             if (snapshot.connectionState == ConnectionState.waiting) {
               AppLogger.info(
-                "Cargando lista de reservas",
-                tag: "RESERVAS_USER",
+                "Cargando lista de reservas activas",
+                tag: "RESERVAS_ACTIVAS_USER",
               );
               return const Center(child: CircularProgressIndicator());
             }
@@ -48,8 +48,8 @@ class _ReservasUserScreenState extends State<ReservasUserScreen> {
             // Error
             if (snapshot.hasError) {
               AppLogger.error(
-                "Error cargando reservas: ${snapshot.error}",
-                tag: "RESERVAS_USER",
+                "Error cargando reservas activas: ${snapshot.error}",
+                tag: "RESERVAS_ACTIVAS_USER",
               );
               return Center(child: Text(snapshot.error.toString()));
             }
@@ -59,24 +59,24 @@ class _ReservasUserScreenState extends State<ReservasUserScreen> {
 
             if (reservas == null || reservas.isEmpty) {
               AppLogger.warning(
-                "Lista de reservas vacía",
-                tag: "RESERVAS_USER",
+                "Lista de reservas activas vacía",
+                tag: "RESERVAS_ACTIVAS_USER",
               );
-              return const Center(child: Text("No hay reservas disponibles"));
+              return const Center(child: Text("No hay reservas activas disponibles"));
             }
 
             AppLogger.info(
-              "Reservas cargadas correctamente: ${reservas.length}",
-              tag: "RESERVAS_USER",
+              "Reservas activas cargadas correctamente: ${reservas.length}",
+              tag: "RESERVAS_ACTIVAS_USER",
             );
 
             return ListView.builder(
               itemCount: reservas.length,
               itemBuilder: (context, i) {
                 final reserva = reservas[i];
-                return ReservaDisponibleCardUser(
+                return ReservaActivaCardUser(
                   reserva: reserva,
-                  onADding: () => _confirmAddingParticipacion(
+                  onDelete: () => _confirmAddingParticipacion(
                     reserva.idReserva,
                     reserva.pista,
                     reserva.fechaFormateada,
@@ -93,22 +93,6 @@ class _ReservasUserScreenState extends State<ReservasUserScreen> {
   }
 
 
-  String _getReservaErrorMessage(Object error) {
-  final errorText = error.toString().toLowerCase();
-
-  if (errorText.contains('23505') ||
-      errorText.contains('duplicate key') ||
-      errorText.contains('duplicate')) {
-    return 'Ya estás apuntado a esta reserva.';
-  }
-
-  if (errorText.contains('capacidad máxima')) {
-    return 'La reserva ya está completa y no admite más usuarios.';
-  }
-
-  return 'Ha ocurrido un error al apuntarte a la reserva.';
-}
-
   Future<void> _confirmAddingParticipacion(
     String idReserva,
     String nombrePista,
@@ -119,34 +103,34 @@ class _ReservasUserScreenState extends State<ReservasUserScreen> {
     final currentUser = supabase.auth.currentUser;
 
     if (currentUser == null) {
-      AppLogger.error("No hay usuario autenticado", tag: "RESERVAS_USER");
+      AppLogger.error("No hay usuario autenticado", tag: "RESERVAS_ACTIVAS_USER");
       return;
     }
 
     final idUsuario = currentUser.id;
 
     AppLogger.info(
-      "Intento de insertar usuario $idUsuario en reserva $idReserva",
-      tag: "RESERVAS_USER",
+      "Intento de eliminar usuario $idUsuario de reserva $idReserva",
+      tag: "RESERVAS_ACTIVAS_USER",
     );
 
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Apuntarme en reserva"),
+          title: const Text("Quitarme de reserva"),
           content: Text(
-            "¿Seguro que quieres apuntarte a la reserva de la pista $nombrePista el día $fecha de $horaInicio a $horaFin?",
+            "¿Seguro que quieres quitarte de la reserva de la pista $nombrePista del día $fecha de $horaInicio a $horaFin?",
           ),
           actions: [
             CustomButton(
-              text: "Cancelar",
+              text: "Atrás",
               isLoading: false,
               primary: false,
               onPressFunction: () => Navigator.pop(context, false),
             ),
             CustomButton(
-              text: "Apuntarme",
+              text: "Quitarme",
               isLoading: false,
               primary: true,
               onPressFunction: () => Navigator.pop(context, true),
@@ -158,50 +142,29 @@ class _ReservasUserScreenState extends State<ReservasUserScreen> {
 
     if (confirm == true) {
       AppLogger.info(
-        "Confirmado apuntarse a reserva $idReserva por el usuario $idUsuario",
-        tag: "RESERVAS_USER",
+        "Confirmado quitarse de la reserva $idReserva por el usuario $idUsuario",
+        tag: "RESERVAS_ACTIVAS_USER",
       );
 
-      try {
-        await ParticipacionReservaService().insertParticipacionUsuario(
+
+        await ParticipacionReservaService().deleteParticipacion(
           idReserva,
           idUsuario,
         );
 
         AppLogger.info(
-          "Participación insertada correctamente (reserva: $idReserva, usuario: $idUsuario)",
+          "Participación eliminada correctamente (reserva: $idReserva, usuario: $idUsuario)",
           tag: "PARTICIPACION_RESERVA_SERVICE",
         );
 
-        if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Te has apuntado correctamente a la reserva."),
-          ),
-        );
-
         setState(() {
-          _reservasFuture = ReservasService().getAllReservasUser();
+          _reservasActivasFuture = ReservasService().getReservasActivasUsuario();
         });
-      } catch (e) {
-        AppLogger.error(
-          "Error al apuntarse a la reserva: $e",
-          tag: "RESERVAS_USER",
-        );
 
-        if (!mounted) return;
-
-        final errorMessage = _getReservaErrorMessage(e);
-
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(errorMessage)));
-      }
     } else {
       AppLogger.info(
-        "Cancelado apuntarse reserva $idReserva por el usuario $idUsuario",
-        tag: "RESERVAS_USER",
+        "Cancelado quitarse de reserva $idReserva por el usuario $idUsuario",
+        tag: "RESERVAS_ACTIVAS_USER",
       );
     }
   }

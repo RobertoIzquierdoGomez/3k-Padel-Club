@@ -1,7 +1,8 @@
 import 'package:app_3k_padel/core/utils/app_logger.dart';
 import 'package:app_3k_padel/features/home/widget/clickable_card.dart';
 import 'package:app_3k_padel/features/perfil/screens/profile_screen.dart';
-import 'package:app_3k_padel/features/reservas/screens/reservas_user_screen.dart';
+import 'package:app_3k_padel/features/reservas/screens/reservas_activas_user_screen.dart';
+import 'package:app_3k_padel/features/reservas/screens/reservas_disponibles_user_screen.dart';
 import 'package:flutter/material.dart';
 
 class UserHomeContent extends StatelessWidget {
@@ -29,7 +30,7 @@ class UserHomeContent extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ReservasUserScreen(),
+                      builder: (context) => ReservasDisponiblesUserScreen(),
                     ),
                   );
                 },
@@ -41,6 +42,12 @@ class UserHomeContent extends StatelessWidget {
                   AppLogger.info(
                     "Acceso a Mis reservas activas",
                     tag: "NAV_USER",
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReservasActivasUserScreen(),
+                    ),
                   );
                 },
               ),

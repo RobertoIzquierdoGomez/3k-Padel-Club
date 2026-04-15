@@ -5,13 +5,13 @@ import 'package:app_3k_padel/widgets/custom_badge.dart';
 import 'package:app_3k_padel/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
-class ReservaDisponibleCardUser extends StatelessWidget{
+class ReservaActivaCardUser extends StatelessWidget{
 
   final ReservasModel reserva;
-  final VoidCallback onAdding;
+  final VoidCallback onDelete;
 
 
-  const ReservaDisponibleCardUser ({super.key, required this.reserva ,required this.onAdding});
+  const ReservaActivaCardUser ({super.key, required this.reserva ,required this.onDelete});
 
 
   @override
@@ -107,7 +107,7 @@ class ReservaDisponibleCardUser extends StatelessWidget{
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CustomButton(
-                        text: "Apuntarme",
+                        text: "Quitarme",
                         isLoading: false,
                         primary: true,
                         onPressFunction: () {
@@ -115,7 +115,7 @@ class ReservaDisponibleCardUser extends StatelessWidget{
                             "Pulsado para apuntarse en reserva ${reserva.idReserva}",
                             tag: "RESERVAS_USER",
                           );
-                          onAdding();
+                          onDelete();
                         },
                       ),
                     ],
@@ -182,15 +182,15 @@ class ReservaDisponibleCardUser extends StatelessWidget{
         Row(
           children: [
             CustomButton(
-              text: "Apuntarme",
+              text: "Quitarme",
               isLoading: false,
-              primary: true,
+              primary: false,
               onPressFunction: () {
                 AppLogger.info(
                   "Pulsado para apuntarse en reserva ${reserva.idReserva}",
                   tag: "RESERVAS_USER",
                 );
-                onAdding();
+                onDelete();
               },
             ),
           ],

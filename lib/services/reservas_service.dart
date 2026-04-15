@@ -1,5 +1,6 @@
 import 'package:app_3k_padel/core/supabase_config.dart';
 import 'package:app_3k_padel/core/utils/app_logger.dart';
+import 'package:app_3k_padel/main.dart';
 import 'package:app_3k_padel/model/reservas_model.dart';
 
 class ReservasService {
@@ -7,7 +8,10 @@ class ReservasService {
 
   Future<List<ReservasModel>> getAllReservasAdmin() async {
     try {
-      AppLogger.info("Obteniendo lista de reservas por administrador", tag: "RESERVA_SERVICE");
+      AppLogger.info(
+        "Obteniendo lista de reservas por administrador",
+        tag: "RESERVA_SERVICE",
+      );
       final data = await _db
           .from('reservas')
           .select('''
@@ -39,14 +43,20 @@ class ReservasService {
 
       return data.map((e) => ReservasModel.fromJson(e)).toList();
     } catch (e) {
-      AppLogger.error("Error obteniendo reservas por el administrador: $e", tag: "RESERVA_SERVICE");
+      AppLogger.error(
+        "Error obteniendo reservas por el administrador: $e",
+        tag: "RESERVA_SERVICE",
+      );
       rethrow;
     }
   }
 
   Future<List<ReservasModel>> getAllReservasUser() async {
     try {
-      AppLogger.info("Obteniendo lista de reservas por usuario", tag: "RESERVA_SERVICE");
+      AppLogger.info(
+        "Obteniendo lista de reservas por usuario",
+        tag: "RESERVA_SERVICE",
+      );
       final data = await _db
           .from('reservas')
           .select('''
@@ -79,7 +89,62 @@ class ReservasService {
 
       return data.map((e) => ReservasModel.fromJson(e)).toList();
     } catch (e) {
-      AppLogger.error("Error obteniendo reservas por usuario: $e", tag: "RESERVA_SERVICE");
+      AppLogger.error(
+        "Error obteniendo reservas por usuario: $e",
+        tag: "RESERVA_SERVICE",
+      );
+      rethrow;
+    }
+  }
+
+  Future<List<ReservasModel>> getReservasActivasUsuario() async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) throw Exception("Usuario no autenticado");
+
+      AppLogger.info(
+        "Obteniendo reservas activas del usuario",
+        tag: "RESERVA_SERVICE",
+      );
+
+      final data = await _db
+          .from('reservas')
+          .select('''
+          *,
+          pistas(
+            nombre
+          ),
+          participacion_reserva!inner(
+            id_usuario,
+            usuario:usuarios(
+              id_usuario,
+              nombre,
+              apellidos,
+              correo,
+              nivel,
+              tipo_miembro,
+              rol,
+              perfil_completo,
+              activo
+            )
+          )
+        ''')
+          .eq('estado', true)
+          .eq('participacion_reserva.id_usuario', userId)
+          .order('fecha', ascending: true)
+          .order('hora_inicio', ascending: true);
+
+      AppLogger.info(
+        "Reservas activas del usuario obtenidas: ${data.length}",
+        tag: "RESERVA_SERVICE",
+      );
+
+      return data.map((e) => ReservasModel.fromJson(e)).toList();
+    } catch (e) {
+      AppLogger.error(
+        "Error obteniendo reservas activas del usuario: $e",
+        tag: "RESERVA_SERVICE",
+      );
       rethrow;
     }
   }
@@ -134,7 +199,7 @@ class ReservasService {
     String idPista,
     DateTime fecha,
     String horaInicio,
-    String horaFin, 
+    String horaFin,
     bool estado, {
     int? capacidadMaxima,
   }) async {
@@ -158,7 +223,10 @@ class ReservasService {
         tag: "RESERVA_SERVICE",
       );
     } catch (e) {
-      AppLogger.error("Error actualizando reserva $id: $e", tag: "RESERVA_SERVICE");
+      AppLogger.error(
+        "Error actualizando reserva $id: $e",
+        tag: "RESERVA_SERVICE",
+      );
       rethrow;
     }
   }
