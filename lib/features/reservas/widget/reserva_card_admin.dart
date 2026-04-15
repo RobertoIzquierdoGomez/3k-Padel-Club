@@ -27,8 +27,10 @@ class ReservaAdminCard extends StatelessWidget {
           elevation: 3,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(
-              color: Color.fromARGB(255, 217, 221, 63),
+            side: BorderSide(
+              color: reserva.estado
+                  ? Color.fromARGB(255, 217, 221, 63)
+                  : Color.fromARGB(255, 218, 84, 93),
               width: 1.2,
             ),
           ),
@@ -55,9 +57,11 @@ class ReservaAdminCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 22,
-              backgroundColor: Color.fromARGB(255, 217, 221, 63),
+              backgroundColor: reserva.estado
+                  ? Color.fromARGB(255, 217, 221, 63)
+                  : Color.fromARGB(255, 218, 84, 93),
               child: Icon(Icons.calendar_month, color: Colors.black),
             ),
             const SizedBox(width: 12),
@@ -159,9 +163,11 @@ class ReservaAdminCard extends StatelessWidget {
   Widget _buildDesktopLayout() {
     return Row(
       children: [
-        const CircleAvatar(
+        CircleAvatar(
           radius: 22,
-          backgroundColor: Color.fromARGB(255, 217, 221, 63),
+          backgroundColor: reserva.estado
+                  ? Color.fromARGB(255, 217, 221, 63)
+                  : Color.fromARGB(255, 218, 84, 93),
           child: Icon(Icons.calendar_month, color: Colors.black),
         ),
         const SizedBox(width: 16),
