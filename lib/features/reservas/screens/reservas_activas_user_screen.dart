@@ -32,7 +32,7 @@ class _ReservasActivasUserScreenState extends State<ReservasActivasUserScreen> {
       extendBodyBehindAppBar: true,
       appBar: CustomAppbar(),
       body: Fondo(
-        imagePath: "assets/backgrounds/fondo_mis_reservas.jpg",
+        imagePath: "assets/backgrounds/fondo_mis_reservas.png",
         child: FutureBuilder<List<ReservasModel>>(
           future: _reservasActivasFuture,
           builder: (context, snapshot) {

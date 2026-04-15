@@ -33,8 +33,8 @@ class ReservasService {
           )  
         )
       ''')
-          .order('fecha', ascending: true)
-          .order('hora_inicio', ascending: true);
+          .order('fecha', ascending: false)
+          .order('hora_inicio', ascending: false);
 
       AppLogger.info(
         "Reservas obtenidas por el administrador: ${data.length}",

@@ -34,7 +34,7 @@ class _GestionClasesAdminScreenState extends State<GestionClasesAdminScreen> {
       tag: "CLASES_ADMIN",
     );
     _clasesFuture = ClasesService().getAllClasesAdmin();
-    _usuariosFuture = UserService().getAllUsers();
+    _usuariosFuture = UserService().getAllUsersClases();
   }
 
   @override

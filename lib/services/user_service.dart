@@ -58,6 +58,26 @@ class UserService {
     }
   }
 
+  Future<List<UserModel>> getAllUsersClases() async {
+    try {
+      AppLogger.info("Obteniendo lista de usuarios activos para las clases", tag: "USER_SERVICE");
+
+      final data = await _db
+          .from('usuarios')
+          .select()
+          .eq('activo', true)
+          .eq('perfil_completo', true)
+          .order('apellidos', ascending: true);
+
+      AppLogger.info("Usuarios obtenidos: ${data.length}", tag: "USER_SERVICE");
+
+      return data.map((e) => UserModel.fromJson(e)).toList();
+    } catch (e) {
+      AppLogger.error("Error obteniendo usuarios para las clases: $e", tag: "USER_SERVICE");
+      rethrow;
+    }
+  }
+
   //Actualizar usuario en el registro (propio usuario)
   Future<void> updateProfile(
     String id,
