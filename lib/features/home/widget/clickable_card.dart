@@ -15,7 +15,15 @@ class ClickableCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final cardSize = screenWidth < 600 ? 150.0 : 200.0;
+
+    double cardSize;
+    if (screenWidth < 360) {
+      cardSize = 135;
+    } else if (screenWidth < 600) {
+      cardSize = 150;
+    } else {
+      cardSize = 200;
+    }
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -29,32 +37,41 @@ class ClickableCard extends StatelessWidget {
             width: cardSize,
             child: Stack(
               children: [
-                // Fondo imagen
                 Positioned.fill(
-                  child: Image.asset(imagePath, fit: BoxFit.cover),
+                  child: Image.asset(
+                    imagePath,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-
-                // Overlay
                 Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Color.fromARGB(255, 217, 221, 63),
-                        width: 3.0,
-                      ),
-                      color: Color.fromARGB(199, 255, 255, 255),
-                    ),
-                    padding: const EdgeInsets.all(20),
-                    child: Center(
-                      child: Text(
-                        text,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 19,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isSmallCard = constraints.maxWidth < 145;
+
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: const Color.fromARGB(255, 217, 221, 63),
+                            width: 3.0,
+                          ),
+                          color: const Color.fromARGB(199, 255, 255, 255),
                         ),
-                      ),
-                    ),
+                        padding: EdgeInsets.all(isSmallCard ? 12 : 20),
+                        child: Center(
+                          child: Text(
+                            text,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: isSmallCard ? 16 : 19,
+                              height: 1.2,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],

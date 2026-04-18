@@ -11,13 +11,14 @@ class UserHomeContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Center(
       child: SingleChildScrollView(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600),
           child: Wrap(
-            spacing: 50,
-            runSpacing: 50,
+            spacing: screenWidth < 400 ? 16 : 32,
+            runSpacing: screenWidth < 400 ? 16 : 32,
             alignment: WrapAlignment.center,
             children: [
               ClickableCard(
