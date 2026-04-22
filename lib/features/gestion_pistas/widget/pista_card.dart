@@ -22,12 +22,17 @@ class PistaCard extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Card(
+          color: pista.estado
+              ? null
+              : const Color.fromARGB(255, 230, 230, 230),
           margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           elevation: 3,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(
-              color: Color.fromARGB(255, 217, 221, 63),
+            side: BorderSide(
+              color: pista.estado
+                  ? Color.fromARGB(255, 217, 221, 63)
+                  : Color.fromARGB(255, 218, 84, 93),
               width: 1.2,
             ),
           ),
