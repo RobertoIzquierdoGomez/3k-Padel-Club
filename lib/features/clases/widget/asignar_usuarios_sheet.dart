@@ -42,67 +42,72 @@ class _AsignarUsuariosSheetState extends State<AsignarUsuariosSheet> {
     }).toList();
 
     return SafeArea(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          spacing: 20,
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                hintText: "Buscar usuario...",
-              ),
-              onChanged: (value) {
-                setState(() {
-                  busqueda = value;
-                });
-              },
-            ),
-            Text(
-              "Máximo $maxUsuarios usuarios por clase",
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-
-            Expanded(
-              child: ListView.builder(
-                itemCount: usuariosFiltrados.length,
-                itemBuilder: (context, i) {
-                  final usuario = usuariosFiltrados[i];
-                  final estaSeleccionado = usuariosSeleccionados.contains(
-                    usuario.idUsuario,
-                  );
-
-                  final puedeSeleccionar =
-                      estaSeleccionado ||
-                      usuariosSeleccionados.length < maxUsuarios;
-                  return CheckboxListTile(
-                    value: estaSeleccionado,
-                    onChanged: puedeSeleccionar
-                        ? (value) {
-                            setState(() {
-                              if (value == true) {
-                                usuariosSeleccionados.add(usuario.idUsuario);
-                              } else {
-                                usuariosSeleccionados.remove(usuario.idUsuario);
-                              }
-                            });
-                          }
-                        : null,
-                    title: Text("${usuario.apellidos}, ${usuario.nombre}"),
-                  );
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.75,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 20,
+            children: [
+              TextField(
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.search),
+                  hintText: "Buscar usuario...",
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    busqueda = value;
+                  });
                 },
               ),
-            ),
-            CustomButton(
-              text: "Guardar",
-              isLoading: false,
-              primary: true,
-              onPressFunction: () {
-                Navigator.pop(context, usuariosSeleccionados);
-              },
-            ),
-          ],
+              Text(
+                "Máximo $maxUsuarios usuarios por clase",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+
+              Expanded(
+                child: ListView.builder(
+                  itemCount: usuariosFiltrados.length,
+                  itemBuilder: (context, i) {
+                    final usuario = usuariosFiltrados[i];
+                    final estaSeleccionado = usuariosSeleccionados.contains(
+                      usuario.idUsuario,
+                    );
+
+                    final puedeSeleccionar =
+                        estaSeleccionado ||
+                        usuariosSeleccionados.length < maxUsuarios;
+                    return CheckboxListTile(
+                      value: estaSeleccionado,
+                      onChanged: puedeSeleccionar
+                          ? (value) {
+                              setState(() {
+                                if (value == true) {
+                                  usuariosSeleccionados.add(usuario.idUsuario);
+                                } else {
+                                  usuariosSeleccionados.remove(
+                                    usuario.idUsuario,
+                                  );
+                                }
+                              });
+                            }
+                          : null,
+                      title: Text("${usuario.apellidos}, ${usuario.nombre}"),
+                    );
+                  },
+                ),
+              ),
+              CustomButton(
+                text: "Guardar",
+                isLoading: false,
+                primary: true,
+                onPressFunction: () {
+                  Navigator.pop(context, usuariosSeleccionados);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
