@@ -38,11 +38,11 @@ class UserHomeContent extends StatelessWidget {
                 },
               ),
               ClickableCard(
-                text: "Mis reservas activas",
+                text: "Reservas activas",
                 imagePath: "assets/backgrounds/fondo_mis_reservas.png",
                 onTap: () {
                   AppLogger.info(
-                    "Acceso a Mis reservas activas",
+                    "Acceso a reservas activas",
                     tag: "NAV_USER",
                   );
                   Navigator.push(
