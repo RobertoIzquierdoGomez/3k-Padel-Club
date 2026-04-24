@@ -131,10 +131,11 @@ lib/
 ├── core/
 ├── features/
 │   ├── auth/
-│   ├── usuarios/
-│   ├── pistas/
-│   ├── reservas/
-│   └── clases/
+│   ├── gestion_pistas/
+│   ├── gestion_usuarios/
+│   ├── home/
+│   ├── perfil/
+│   └── reservas/
 ├── model/
 ├── services/
 ├── widgets/
@@ -184,8 +185,8 @@ Antes de ejecutar el proyecto necesitas disponer de:
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <URL_DEL_REPOSITORIO>
-cd <NOMBRE_DEL_PROYECTO>
+git clone https://github.com/RobertoIzquierdoGomez/3k-Padel-Club.git
+cd 3k-Padel-Club
 ```
 
 ### 2. Instalar dependencias
